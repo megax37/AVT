@@ -17,7 +17,25 @@ Orange::Orange() {
 	current_rotation[0] = 0.0f;
 	current_rotation[1] = 0.0f;
 	current_rotation[2] = 0.0f;
+	initial_velocity[0] = 0.2 + (rand() % 100) / 100;
+	initial_velocity[1] = 0;
+	initial_velocity[2] = 0.2 + (rand() % 100) / 100;
 }
+
+Orange::Orange(float x, float y, float z){
+	{
+		current_position[0] = x;
+		current_position[1] = y;
+		current_position[2] = z;
+		current_rotation[0] = 0.0f;
+		current_rotation[1] = 0.0f;
+		current_rotation[2] = 0.0f;
+		initial_velocity[0] = 0.2 + (rand() % 101) / 100;
+		initial_velocity[1] = 0;
+		initial_velocity[2] = 0.2 + (rand() % 101) / 100;
+	}
+}
+
 void Orange::createOrangeMesh() {
 
 	float amb[] = { 1.0f, 0.5f, 0.0f, 1.0f };
@@ -35,9 +53,9 @@ void Orange::createOrangeMesh() {
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
-	mesh[objId].position[0] = position[0];
-	mesh[objId].position[1] = position[1];
-	mesh[objId].position[2] = position[2];
+	mesh[objId].position[0] = current_position[0];
+	mesh[objId].position[1] = current_position[1];
+	mesh[objId].position[2] = current_position[2];
 	createSphere(3.0f, 20, mesh, objId);
 
 }
@@ -57,7 +75,7 @@ void Orange::renderOrange(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_u
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
 		glUniform1f(loc, getMesh()[i].mat.shininess);
 		pushMatrix(MODEL);
-		translate(MODEL, getMesh()[i].position[0] + current_position[0], getMesh()[i].position[1] + current_position[1], getMesh()[i].position[2] + current_position[2]);
+		translate(MODEL, current_position[0], current_position[1], current_position[2]);
 
 		// send matrices to OGL
 		computeDerivedMatrix(PROJ_VIEW_MODEL);
@@ -87,9 +105,9 @@ void Orange::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[2] += dz;
 }
 
-void Orange::move(){
+void Orange::move(float accelaration){
 	increaseRotation(0, 0, 160.0f *((1000.0f / 60.0f) / 1000.0f));
 	//float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
-	increasePosition(0.1f, 0, 0);
+	increasePosition(0, 0, initial_velocity[2]+accelaration);
 
 }

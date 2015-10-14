@@ -26,26 +26,17 @@ private:
 public:
 	float current_position[3];
 	float current_rotation[3];
+	float initial_velocity[3];
 	MyMesh mesh[1];
 	int meshLength = 1;
 	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
 
 
 	Orange();
-	Orange(float x, float y, float z) {
-		position[0] = x;
-		position[1] = y;
-		position[2] = z;
-		current_position[0] = 0.0f;
-		current_position[1] = 0.0f;
-		current_position[2] = 0.0f;
-		current_rotation[0] = 0.0f;
-		current_rotation[1] = 0.0f;
-		current_rotation[2] = 0.0f;
-	}
+	Orange(float x, float y, float z);
 
 	void createOrangeMesh();
-	void move();
+	void move(float accelaration);
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
 	void renderOrange(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
