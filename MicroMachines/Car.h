@@ -21,6 +21,7 @@
 
 class Car {
 private:
+	float max_velocity = 25;
 	float velocity = 20;
 	float turn_speed = 160;
 	float current_speed = 0;

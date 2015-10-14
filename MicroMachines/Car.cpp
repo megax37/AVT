@@ -22,10 +22,10 @@ Car::Car() {
 void Car::createCarMesh() {
 
 	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
-	float diff[] = { 0.8f, 0.6f, 0.4f, 1.0f };
-	float spec[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float diff[] = { 1.0f, 0.1f, 0.1f, 1.0f };
+	float spec[] = { 1.0f, 0.5f, 0.5f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	float shininess = 100.0f;
+	float shininess = 120.0f;
 	int texcount = 0;
 
 	// create geometry and VAO of the pawn
@@ -197,6 +197,12 @@ void Car::increaseRotation(float dx, float dy, float dz) {
 
 void Car::move(){
 	increaseRotation(0, currentTurn_speed *((1000.0f / 60.0f) / 1000.0f), 0);
+	if (current_speed > max_velocity) {
+		current_speed = max_velocity;
+	}
+	else if (current_speed < -max_velocity) {
+		current_speed = -max_velocity;
+	}
 	float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
 	float dx = (float)(distance * sin(Car::current_rotation[1] * (PI / 180.f)));
 	float dz = (float)(distance * cos(Car::current_rotation[1] * (PI / 180.f)));

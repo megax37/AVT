@@ -19,7 +19,7 @@ class Camera {
 		// Camera Spherical Coordinates
 		//float alpha = 39.0f, beta = 51.0f;
 		//float alpha = 0.0f, beta = 20.0f;
-		float r = 100.0f;
+		float r = 50.0f;
 		float angleAroundPlayer = 0;
 		float pitch = 70;
 

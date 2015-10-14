@@ -104,11 +104,11 @@ void processKeys(unsigned char key, int xx, int yy)
 void processUpKeys(unsigned char key, int xx, int yy) {
 
 	if (key == 'w') {
-		car->setCurrent_Speed(0);
+		//car->setCurrent_Speed(0);
 		car->setCurrentTurn_speed(0);
 	}
 	else if (key == 's') {
-		car->setCurrent_Speed(0);
+		//car->setCurrent_Speed(0);
 		car->setCurrentTurn_speed(0);
 	}
 	else if (key == 'a') {
@@ -120,6 +120,38 @@ void processUpKeys(unsigned char key, int xx, int yy) {
 
 
 	keystates[key] = false;
+}
+
+void activeKeys() {
+
+	if (keystates['w']) {
+		if (keystates['d']) {
+			car->setCurrentTurn_speed(-car->getTurn_speed());
+		}
+		else if (keystates['a']) {
+			car->setCurrentTurn_speed(car->getTurn_speed());
+		}
+		car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+		return;
+	}
+
+	if (keystates['s']) {
+		if (keystates['d']) {
+			car->setCurrentTurn_speed(car->getTurn_speed());
+		}
+		else if (keystates['a']) {
+			car->setCurrentTurn_speed(-car->getTurn_speed());
+		}
+		car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+		return;
+	}
+
+	if (car->getCurrent_Speed() > 0) {
+		car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+	}
+	else if (car->getCurrent_Speed() < 0) {
+		car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+	}
 }
 
 // ------------------------------------------------------------
@@ -204,29 +236,6 @@ void mouseWheel(int wheel, int direction, int x, int y) {
 
 	//  uncomment this if not using an idle func
 	//	glutPostRedisplay();
-}
-
-void activeKeys() {
-
-	if (keystates['w']) {
-		if (keystates['d']) {
-			car->setCurrentTurn_speed(-car->getTurn_speed());
-		}
-		else if (keystates['a']) {
-			car->setCurrentTurn_speed(car->getTurn_speed());
-		}
-		car->setCurrent_Speed(-car->getVelocity());
-	}
-
-	if (keystates['s']) {
-		if (keystates['d']) {
-			car->setCurrentTurn_speed(car->getTurn_speed());
-		}
-		else if (keystates['a']) {
-			car->setCurrentTurn_speed(-car->getTurn_speed());
-		}
-		car->setCurrent_Speed(car->getVelocity());
-	}
 }
 
 GLuint setupShaders() {
