@@ -298,11 +298,11 @@ void changeSize(int w, int h) {
 	ratio = (1.0f * w) / h;
 	loadIdentity(PROJECTION);
 	if (secondView || thirdView) {
-		perspective(60.0f, ratio, 0.1f, 1000.0f);
+		perspective(90.0f, ratio, 0.1f, 1000.0f);
 	}
 	else if (firstView) {
 		//ortho(0.0f, w, h, 0.0f, 0.0f, -1.0f);
-		ortho(-101, 101, -101, 101, -1.0f, 200.0f);
+		ortho(-500, 500, -101, 101, -200.0f, 200.0f);
 	}
 }
 
@@ -321,16 +321,16 @@ void renderScene(void) {
 		camera->setCamX(0.0f);
 		camera->setCamY(150.0f);
 		camera->setCamZ(0.08f);
-		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
+		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 1, 0, 0);
 	}
 	else if (secondView) {
 		//camera->r = 105.0f;
 		camera->pitch = 90.0f;
-		camera->setCamX(0.0f);
+		camera->setCamX(10.0f);
 		camera->setCamY(150.0f);
 		camera->setCamZ(0.08f);
 		std::cout << camera->getCamX() << " valor de x " << camera->getCamY() << " valor de y " << camera->getCamZ() << " valor de z " << std::endl;
-		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
+		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 1, 0, 0);
 
 	}
 	else if (thirdView) {
