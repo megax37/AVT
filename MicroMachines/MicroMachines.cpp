@@ -31,7 +31,8 @@ VSShaderLib shader;
 Camera *camera;
 Car *car;
 Terrain *terrain;
-Orange *orange;
+Orange *orange[5];
+float globalOrangesAccelaration = 0;
 
 //struct MyMesh mesh[4];
 //int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
@@ -292,9 +293,19 @@ void renderScene(void) {
 	lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
 	// use our shader
 	terrain->renderTerrain(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	orange->~Orange();
-	orange->move();
-	orange->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+
+	//Oranges movement
+	int i;
+	for (i = 0; i < 5; i++){
+		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
+			orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
+			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
+			orange[i]->createOrangeMesh();
+		}
+	orange[i]->move(globalOrangesAccelaration);
+	orange[i]->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	}
+	globalOrangesAccelaration += 0.0002;
 
 	glUseProgram(shader.getProgramIndex());
 
@@ -317,7 +328,13 @@ void init()
 
 	car->createCarMesh();
 	terrain->createTerrainMesh();
-	orange->createOrangeMesh();
+
+	//Initialize oranges
+	int i;
+	for (i = 0; i < 5; i++){
+		orange[i]->createOrangeMesh();
+	}
+	
 
 	camera->calculate(camera->r, camera->angleAroundPlayer, camera->pitch);
 
@@ -352,8 +369,13 @@ int main(int argc, char **argv) {
 	if (terrain == NULL)
 		terrain = new Terrain();
 
-	if (orange == NULL)
-		orange = new Orange(7.0f, 3.0f, 0.0f);
+	//Orange respawn
+	for (int i = 0; i < 5; i++){
+		if (orange[i] == NULL)
+			//Spawns an orange between -100 and 100
+			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
+	}
+
 
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
