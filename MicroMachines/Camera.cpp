@@ -19,33 +19,22 @@ void Camera::setValues(float camx, float camy, float camz) {
 	camY = camz;
 }
 
-void Camera::move(float currentRotation, float xposition, float yposition, float zposition) {
-	//float horizontalDistance = calculateHorizontaDistance();
-	//float verticalDistance = calculateVerticalDistance();
-	calculateCameraPos(currentRotation, xposition, yposition, zposition);
-	
+void Camera::move(bool front, float currentRotation, float xposition, float yposition, float zposition) {
+	calculateCameraPos(front, currentRotation, xposition, yposition, zposition);
+
 }
 
-/*float Camera::calculateHorizontaDistance() {
-	return r * cos(pitch * (PI / 180.0f));
-}*/
-
-/*float Camera::calculateVerticalDistance() {
-	return r * sin(pitch * (PI / 180.0f));
-}*/
-
-void Camera::calculateCameraPos(float currentRotation, float xposition, float yposition, float zposition) {
-	/*float theta = currentRotation + angleAroundPlayer;
-	float offsetX = horizDistance * sin(theta * (PI / 180.0f));
-	float offsetZ = horizDistance * cos(theta * (PI / 180.0f));
-	camX = xposition - offsetX;
-	camY = yposition + verticDistance;
-	camZ = zposition - offsetZ;*/
+void Camera::calculateCameraPos(bool front, float currentRotation, float xposition, float yposition, float zposition) {
 	float theta = currentRotation + angleAroundPlayer;
 	float offsetX = r * cos(pitch * 3.14f / 180.0f) * sin(theta * 3.14f / 180.0f);
 	float offsetZ = r * cos(pitch * 3.14f / 180.0f) * cos(theta * (PI / 180.0f));
-	camX = xposition - offsetX;
+	if (front) {
+		camX = xposition + offsetX;
+		camZ = zposition + offsetZ;
+	}
+	else {
+		camX = xposition - offsetX;
+		camZ = zposition - offsetZ;
+	}
 	camY = yposition + (r *   						     sin(pitch * 3.14f / 180.0f));
-	camZ = zposition - offsetZ;
-
 }

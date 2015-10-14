@@ -22,16 +22,18 @@
 class Car {
 private:
 	float max_velocity = 25;
-	float velocity = 20;
+	float velocity = 20.0f;
 	float turn_speed = 160;
 	float current_speed = 0;
 	float currentTurn_speed = 0;
+
 public:
 	MyMesh mesh[5];
 	int meshLength = 5;
 	float current_position[3];
 	float current_rotation[3];
 	float lastRotationValue = 0.0f;
+	float aceleracao = 0;
 	int frame = 0;
 	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
 

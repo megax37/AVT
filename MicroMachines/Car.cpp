@@ -143,7 +143,7 @@ void Car::renderCar(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 		if (i == 1) {
 			rotate(MODEL, current_rotation[1], 1.0f, 0.0f, 0.0f);
 		}
-		
+
 		if (i == 2) {
 			float dz = (float)(-2.0f * sin(Car::current_rotation[1] * (PI / 180.f)));
 			float dy = (float)(2.0f * cos(Car::current_rotation[1] * (PI / 180.f)));

@@ -52,6 +52,7 @@ GLint lPos_uniformId;
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
 bool keystates[256];
+bool front = true;
 
 bool firstView = false;
 bool secondView = false;
@@ -91,7 +92,21 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 27:
 		glutLeaveMainLoop();
 		break;
-
+	case '1':
+		firstView = true;
+		secondView = false;
+		thirdView = false;
+		break;
+	case '2':
+		firstView = false;
+		secondView = true;
+		thirdView = false;
+		break;
+	case '3':
+		firstView = false;
+		secondView = false;
+		thirdView = true;
+		break;
 	case 'c':
 		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->angleAroundPlayer, camera->pitch, camera->r);
 		break;
@@ -103,55 +118,59 @@ void processKeys(unsigned char key, int xx, int yy)
 }
 
 void processUpKeys(unsigned char key, int xx, int yy) {
-
-	if (key == 'w') {
-		//car->setCurrent_Speed(0);
-		car->setCurrentTurn_speed(0);
-	}
-	else if (key == 's') {
-		//car->setCurrent_Speed(0);
-		car->setCurrentTurn_speed(0);
-	}
-	else if (key == 'a') {
-		car->setCurrentTurn_speed(0);
-	}
-	else if (key == 'd') {
-		car->setCurrentTurn_speed(0);
-	}
-
-
 	keystates[key] = false;
 }
 
 void activeKeys() {
 
 	if (keystates['w']) {
-		if (keystates['d']) {
-			car->setCurrentTurn_speed(-car->getTurn_speed());
-		}
-		else if (keystates['a']) {
-			car->setCurrentTurn_speed(car->getTurn_speed());
-		}
+		front = true;
 		car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
-		return;
+		//return;
 	}
 
 	if (keystates['s']) {
-		if (keystates['d']) {
-			car->setCurrentTurn_speed(car->getTurn_speed());
-		}
-		else if (keystates['a']) {
-			car->setCurrentTurn_speed(-car->getTurn_speed());
-		}
+		front = false;
 		car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
-		return;
+		//return;
 	}
 
-	if (car->getCurrent_Speed() > 0) {
-		car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+	if ((keystates['a'] && keystates['w']) || (keystates['a'] && keystates['s'])) {
+		car->setCurrentTurn_speed(car->getTurn_speed());
 	}
-	else if (car->getCurrent_Speed() < 0) {
-		car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+	else if ((keystates['d'] && keystates['w']) || (keystates['d'] && keystates['s'])) {
+		car->setCurrentTurn_speed(-car->getTurn_speed());
+	}
+
+	if (!keystates['a'] && !keystates['d']) {
+		car->setCurrentTurn_speed(0);
+	}
+
+	if (!keystates['w'] && !keystates['s']) {
+		if (car->getCurrent_Speed() > 0) {
+			if (fabs(car->getCurrent_Speed()) < 4.0) {
+				car->setCurrentTurn_speed(0);
+			}
+			else {
+				if (keystates['a'])
+					car->setCurrentTurn_speed(-car->getTurn_speed());
+				else if (keystates['d'])
+					car->setCurrentTurn_speed(car->getTurn_speed());
+			}
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+		}
+		else if (car->getCurrent_Speed() < 0) {
+			if (fabs(car->getCurrent_Speed()) < 4.0) {
+				car->setCurrentTurn_speed(0);
+			}
+			else {
+				if (keystates['a'])
+					car->setCurrentTurn_speed(car->getTurn_speed());
+				else if (keystates['d'])
+					car->setCurrentTurn_speed(-car->getTurn_speed());
+			}
+			car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+		}
 	}
 }
 
@@ -220,7 +239,7 @@ void processMouseMotion(int xx, int yy)
 			rAux = 0.1f;
 	}
 
-	camera->calculate(rAux, alphaAux, betaAux);
+	//camera->calculate(rAux, alphaAux, betaAux);
 
 	//  uncomment this if not using an idle func
 	//	glutPostRedisplay();
@@ -275,13 +294,18 @@ void changeSize(int w, int h) {
 	// set the projection matrix
 	ratio = (1.0f * w) / h;
 	loadIdentity(PROJECTION);
-	perspective(60.0f, ratio, 0.1f, 1000.0f);
+	if (secondView || thirdView) {
+		perspective(60.0f, ratio, 0.1f, 1000.0f);
+	}
+	else if (firstView) {
+		//ortho(0.0f, w, h, 0.0f, 0.0f, -1.0f);
+		ortho(-101, 101, -101, 101, -1.0f, 200.0f);
+	}
 }
 
 void renderScene(void) {
 
 	GLint loc;
-
 	FrameCount++;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1, 1, 1, 1);
@@ -289,11 +313,34 @@ void renderScene(void) {
 	loadIdentity(VIEW);
 	loadIdentity(MODEL);
 	// set the camera using a function similar to gluLookAt
-	//camera->move(car->current_rotation[1], car->current_position[0], car->current_position[1], car->current_position[2]);
-	lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
+	if (firstView) {
+		camera->pitch = 90.0f;
+		camera->setCamX(0.0f);
+		camera->setCamY(150.0f);
+		camera->setCamZ(0.08f);
+		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
+	}
+	else if (secondView) {
+		//camera->r = 105.0f;
+		camera->pitch = 90.0f;
+		camera->setCamX(0.0f);
+		camera->setCamY(150.0f);
+		camera->setCamZ(0.08f);
+		std::cout << camera->getCamX() << " valor de x " << camera->getCamY() << " valor de y " << camera->getCamZ() << " valor de z " << std::endl;
+		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 0, 1, 0);
+
+	}
+	else if (thirdView) {
+		camera->r = 20.0f;
+		camera->pitch = 15.0f;
+		camera->move(front, car->current_rotation[1], car->current_position[0], car->current_position[1], car->current_position[2]);
+		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), car->current_position[0], 0, car->current_position[2], 0, 1, 0);
+	}
+
+	glUseProgram(shader.getProgramIndex());
+	glUniform4fv(lPos_uniformId, 1, lightPos);
 	// use our shader
 	terrain->renderTerrain(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-
 	//Oranges movement
 	int i;
 	for (i = 0; i < 5; i++){
@@ -302,24 +349,18 @@ void renderScene(void) {
 			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
 			orange[i]->createOrangeMesh();
 		}
-	orange[i]->move(globalOrangesAccelaration);
-	orange[i]->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+		orange[i]->move(globalOrangesAccelaration);
+		orange[i]->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
 	globalOrangesAccelaration += 0.0002;
-
-	glUseProgram(shader.getProgramIndex());
-
-	//send the light position in eye coordinates
-
-	glUniform4fv(lPos_uniformId, 1, lightPos); //efeito capacete do mineiro, ou seja lighPos foi definido em eye coord
-
 	//float res[4];
 	//multMatrixPoint(VIEW, lightPos, res);   //lightPos definido em World Coord so is converted to eye space
 	//glUniform4fv(lPos_uniformId, 1, res); 
 	activeKeys();
 	car->move();
 	car->renderCar(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-
+	//send the light position in eye coordinates
+	 //efeito capacete do mineiro, ou seja lighPos foi definido em eye coord
 	glutSwapBuffers();
 }
 
