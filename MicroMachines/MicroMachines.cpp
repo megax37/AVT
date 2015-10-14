@@ -20,6 +20,7 @@
 #include "Car.h"
 #include "Terrain.h"
 #include "Orange.h"
+#include "Butter.h"
 
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
@@ -33,6 +34,8 @@ Car *car;
 Terrain *terrain;
 Orange *orange[5];
 float globalOrangesAccelaration = 0;
+
+Butter *butter;
 
 //struct MyMesh mesh[4];
 //int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
@@ -353,6 +356,9 @@ void renderScene(void) {
 		orange[i]->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
 	globalOrangesAccelaration += 0.0002;
+
+	butter->renderButter(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+
 	//float res[4];
 	//multMatrixPoint(VIEW, lightPos, res);   //lightPos definido em World Coord so is converted to eye space
 	//glUniform4fv(lPos_uniformId, 1, res); 
@@ -375,6 +381,8 @@ void init()
 	for (i = 0; i < 5; i++){
 		orange[i]->createOrangeMesh();
 	}
+
+	butter->createButterMesh();
 	
 
 	camera->calculate(camera->r, camera->angleAroundPlayer, camera->pitch);
@@ -416,6 +424,9 @@ int main(int argc, char **argv) {
 			//Spawns an orange between -100 and 100
 			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
 	}
+
+	if (butter == NULL)
+		butter = new Butter(-20 + (rand() % 40), 0.3f, -20 + (rand() % 40));
 
 
 	//  Callback Registration
