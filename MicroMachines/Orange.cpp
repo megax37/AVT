@@ -10,33 +10,24 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Orange::Orange() {
-	current_position[0] = 0.0f;
-	current_position[1] = 0.0f;
-	current_position[2] = 0.0f;
-	current_rotation[0] = 0.0f;
-	current_rotation[1] = 0.0f;
-	current_rotation[2] = 0.0f;
+Orange::Orange() : Entity() {
 	initial_velocity[0] = 0.2 + (rand() % 100) / 100;
 	initial_velocity[1] = 0;
 	initial_velocity[2] = 0.2 + (rand() % 100) / 100;
 }
 
-Orange::Orange(float x, float y, float z){
+Orange::Orange(float x, float y, float z) : Entity(1) {
 	{
 		current_position[0] = x;
 		current_position[1] = y;
 		current_position[2] = z;
-		current_rotation[0] = 0.0f;
-		current_rotation[1] = 0.0f;
-		current_rotation[2] = 0.0f;
 		initial_velocity[0] = 0.2 + (rand() % 101) / 100;
 		initial_velocity[1] = 0;
 		initial_velocity[2] = 0.2 + (rand() % 101) / 100;
 	}
 }
 
-void Orange::createOrangeMesh() {
+void Orange::createMesh() {
 
 	float amb[] = { 1.0f, 0.5f, 0.0f, 1.0f };
 	float diff[] = { 1.0f, 0.5f, 0.0f, 1.0f };
@@ -60,20 +51,20 @@ void Orange::createOrangeMesh() {
 
 }
 
-void Orange::renderOrange(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
 
 	GLuint loc;
 
-	for (int i = 0; i < getMeshLength(); ++i) {
+	for (int i = 0; i < meshLength; ++i) {
 		// send the material
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
-		glUniform4fv(loc, 1, getMesh()[i].mat.ambient);
+		glUniform4fv(loc, 1, mesh[i].mat.ambient);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
-		glUniform4fv(loc, 1, getMesh()[i].mat.diffuse);
+		glUniform4fv(loc, 1, mesh[i].mat.diffuse);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
-		glUniform4fv(loc, 1, getMesh()[i].mat.specular);
+		glUniform4fv(loc, 1, mesh[i].mat.specular);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
-		glUniform1f(loc, getMesh()[i].mat.shininess);
+		glUniform1f(loc, mesh[i].mat.shininess);
 		pushMatrix(MODEL);
 		translate(MODEL, current_position[0], current_position[1], current_position[2]);
 
@@ -85,8 +76,8 @@ void Orange::renderOrange(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_u
 		glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
 
 		// Render mesh
-		glBindVertexArray(getMesh()[i].vao);
-		glDrawElements(getMesh()[i].type, getMesh()[i].numIndexes, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(mesh[i].vao);
+		glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		popMatrix(MODEL);
@@ -105,9 +96,9 @@ void Orange::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[2] += dz;
 }
 
-void Orange::move(float accelaration){
+void Orange::move(){
 	increaseRotation(0, 0, 160.0f *((1000.0f / 60.0f) / 1000.0f));
 	//float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
-	increasePosition(0, 0, initial_velocity[2]+accelaration);
+	increasePosition(0, 0, initial_velocity[2] + aceleration);
 
 }

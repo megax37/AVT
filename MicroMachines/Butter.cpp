@@ -10,27 +10,17 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Butter::Butter() {
-	current_position[0] = 0.0f;
-	current_position[1] = 0.0f;
-	current_position[2] = 0.0f;
-	current_rotation[0] = 0.0f;
-	current_rotation[1] = 0.0f;
-	current_rotation[2] = 0.0f;
-}
+Butter::Butter() : Entity() {}
 
-Butter::Butter(float x, float y, float z){
+Butter::Butter(float x, float y, float z) : Entity(1) {
 	{
 		current_position[0] = x;
 		current_position[1] = y;
 		current_position[2] = z;
-		current_rotation[0] = 0.0f;
-		current_rotation[1] = 0.0f;
-		current_rotation[2] = 0.0f;
 	}
 }
 
-void Butter::createButterMesh() {
+void Butter::createMesh() {
 
 	float amb[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 	float diff[] = { 1.0f, 1.0f, 0.0f, 1.0f };
@@ -54,23 +44,23 @@ void Butter::createButterMesh() {
 
 }
 
-void Butter::renderButter(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
 
 	GLuint loc;
 
-	for (int i = 0; i < getMeshLength(); ++i) {
+	for (int i = 0; i < meshLength; ++i) {
 		// send the material
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
-		glUniform4fv(loc, 1, getMesh()[i].mat.ambient);
+		glUniform4fv(loc, 1, mesh[i].mat.ambient);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
-		glUniform4fv(loc, 1, getMesh()[i].mat.diffuse);
+		glUniform4fv(loc, 1, mesh[i].mat.diffuse);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
-		glUniform4fv(loc, 1, getMesh()[i].mat.specular);
+		glUniform4fv(loc, 1, mesh[i].mat.specular);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
-		glUniform1f(loc, getMesh()[i].mat.shininess);
+		glUniform1f(loc, mesh[i].mat.shininess);
 		pushMatrix(MODEL);
 		translate(MODEL, current_position[0], current_position[1], current_position[2]);
-		scale(MODEL, 2.0f, 2.0f, 2.0f);
+		scale(MODEL, 4.0f, 2.0f, 6.0f);
 
 		// send matrices to OGL
 		computeDerivedMatrix(PROJ_VIEW_MODEL);
@@ -80,8 +70,8 @@ void Butter::renderButter(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_u
 		glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
 
 		// Render mesh
-		glBindVertexArray(getMesh()[i].vao);
-		glDrawElements(getMesh()[i].type, getMesh()[i].numIndexes, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(mesh[i].vao);
+		glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		popMatrix(MODEL);
@@ -93,3 +83,7 @@ void Butter::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[1] += dy;
 	current_rotation[2] += dz;
 }
+
+void Butter::increasePosition(float dx, float dy, float dz) {}
+
+void Butter::move(){}

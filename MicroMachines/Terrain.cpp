@@ -10,10 +10,9 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Terrain::Terrain() {
-}
+Terrain::Terrain() : Entity(5) {}
 
-void Terrain::createTerrainMesh() {
+void Terrain::createMesh() {
 
 	// create geometry and VAO of the table
 	float amb[] = { 0.4f, 0.270f, 0.075f, 1.0f };
@@ -22,6 +21,7 @@ void Terrain::createTerrainMesh() {
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
 	int texcount = 0;
+
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
@@ -62,6 +62,7 @@ void Terrain::createTerrainMesh() {
 	float emissive2[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess2 = 0.0f;
 	int texcount2 = 0;
+
 	objId = 2;
 	memcpy(mesh[objId].mat.ambient, amb2, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff2, 4 * sizeof(float));
@@ -81,6 +82,7 @@ void Terrain::createTerrainMesh() {
 	float emissive3[] = { 0.377f, 0.377f, 0.377f, 1.0f };
 	float shininess3 = 0.0f;
 	int texcount3 = 0;
+
 	objId = 3;
 	memcpy(mesh[objId].mat.ambient, amb3, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff3, 4 * sizeof(float));
@@ -110,37 +112,37 @@ void Terrain::createTerrainMesh() {
 
 }
 
-void Terrain::renderTerrain(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
 
 	GLuint loc;
 
-	for (int i = 0; i < getMeshLength(); ++i) {
+	for (int i = 0; i < meshLength; ++i) {
 		// send the material
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
-		glUniform4fv(loc, 1, getMesh()[i].mat.ambient);
+		glUniform4fv(loc, 1, mesh[i].mat.ambient);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
-		glUniform4fv(loc, 1, getMesh()[i].mat.diffuse);
+		glUniform4fv(loc, 1, mesh[i].mat.diffuse);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
-		glUniform4fv(loc, 1, getMesh()[i].mat.specular);
+		glUniform4fv(loc, 1, mesh[i].mat.specular);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
-		glUniform1f(loc, getMesh()[i].mat.shininess);
+		glUniform1f(loc, mesh[i].mat.shininess);
 		pushMatrix(MODEL);
 
-		translate(MODEL, getMesh()[i].position[0], getMesh()[i].position[1], getMesh()[i].position[2]);
+		translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
 
 		if (i == 1) {
-			scale(MODEL, 100.0f, 0.0f, 10.0f);
+			scale(MODEL, 200.0f, 0.0f, 30.0f);
 		}
-		
+
 		if (i == 2) {
-			scale(MODEL, 100.0f, 0.0f, 0.3f);
+			scale(MODEL, 200.0f, 0.0f, 0.9f);
 		}
 
 		if (i == 3) {
-			scale(MODEL, 100.0f, 0.0f, 4.0f);
+			scale(MODEL, 200.0f, 0.0f, 12.0f);
 		}
 		if (i == 4) {
-			scale(MODEL, 100.0f, 0.0f, 4.0f);
+			scale(MODEL, 200.0f, 0.0f, 12.0f);
 		}
 
 		// send matrices to OGL
@@ -151,10 +153,16 @@ void Terrain::renderTerrain(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm
 		glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
 
 		// Render mesh
-		glBindVertexArray(getMesh()[i].vao);
-		glDrawElements(getMesh()[i].type, getMesh()[i].numIndexes, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(mesh[i].vao);
+		glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		popMatrix(MODEL);
 	}
 }
+
+void Terrain::increasePosition(float dx, float dy, float dz) {}
+
+void Terrain::increaseRotation(float dx, float dy, float dz) {}
+
+void Terrain::move() {}

@@ -18,37 +18,38 @@
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
+#include "Entity.h"
 
-class Car {
+class Car : public Entity {
 private:
 	float max_velocity = 25;
-	float velocity = 20.0f;
 	float turn_speed = 160;
 	float current_speed = 0;
 	float currentTurn_speed = 0;
+	//MyMesh mesh[2];
+	float aceleration = 6.0;
+	float current_Aceleration = 0.0f;
+	bool front = true;
+	//int frame = 0;
+	//int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
 
 public:
-	MyMesh mesh[5];
-	int meshLength = 5;
-	float current_position[3];
-	float current_rotation[3];
-	float lastRotationValue = 0.0f;
-	float aceleracao = 0;
-	int frame = 0;
-	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
-
+	//float current_position[3];
+	//float current_rotation[3];
 
 	Car();
 
-	void createCarMesh();
-	void renderCar(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
+	void createMesh();
+	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
 	void move();
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
-	MyMesh* getMesh() { return mesh; }
-	int getMeshLength() { return meshLength; }
-	float getVelocity() { return velocity; }
+	bool getFront() { return front; }
+	void setFront(bool newFront) { front = newFront; }
 	float getTurn_speed() { return turn_speed; }
+	float getAceleration() { return aceleration; }
+	float getCurrent_Aceleration() { return current_Aceleration; }
+	void setCurrent_Aceleration(float newAceleration) { current_Aceleration = newAceleration; }
 	float getCurrent_Speed() { return current_speed; }
 	void setCurrent_Speed(float newSpeed) { current_speed = newSpeed; }
 	float getCurrentTurn_speed() { return currentTurn_speed; }

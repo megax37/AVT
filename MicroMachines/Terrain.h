@@ -18,21 +18,22 @@
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
+#include "Entity.h"
 
 
-class Terrain {
+class Terrain : public Entity {
+	/*private:
+	MyMesh mesh[5];
+	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh*/
+
 public:
-	MyMesh mesh[1];
-	int meshLength = 1;
-	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
-
-
 	Terrain();
 
-	void createTerrainMesh();
-	void renderTerrain(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
-	MyMesh* getMesh() { return mesh; }
-	int getMeshLength() { return meshLength; }
+	void createMesh();
+	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
+	void move();
+	void increasePosition(float dx, float dy, float dz);
+	void increaseRotation(float dx, float dy, float dz);
 };
 
 #endif

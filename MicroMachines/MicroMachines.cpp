@@ -32,10 +32,11 @@ VSShaderLib shader;
 Camera *camera;
 Car *car;
 Terrain *terrain;
+Butter *butter;
 Orange *orange[5];
 float globalOrangesAccelaration = 0;
 
-Butter *butter;
+std::vector<Entity*> entities;
 
 //struct MyMesh mesh[4];
 //int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
@@ -96,22 +97,16 @@ void processKeys(unsigned char key, int xx, int yy)
 		glutLeaveMainLoop();
 		break;
 	case '1':
-		firstView = true;
-		secondView = false;
-		thirdView = false;
+		camera->chooseView('1');
 		break;
 	case '2':
-		firstView = false;
-		secondView = true;
-		thirdView = false;
+		camera->chooseView('2');
 		break;
 	case '3':
-		firstView = false;
-		secondView = false;
-		thirdView = true;
+		camera->chooseView('3');
 		break;
 	case 'c':
-		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->angleAroundPlayer, camera->pitch, camera->r);
+		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->getAngleAroundPlayer(), camera->getPitch(), camera->getR());
 		break;
 	case 'm': glEnable(GL_MULTISAMPLE); break;
 	case 'n': glDisable(GL_MULTISAMPLE); break;
@@ -127,14 +122,23 @@ void processUpKeys(unsigned char key, int xx, int yy) {
 void activeKeys() {
 
 	if (keystates['w']) {
-		front = true;
-		car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+		car->setFront(true);
+		if (car->getCurrent_Speed() > 0.0f) {
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5);
+		}
+		car->setCurrent_Aceleration(-car->getAceleration());
+		//car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
 		//return;
 	}
 
 	if (keystates['s']) {
-		front = false;
-		car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+		car->setFront(false);
+
+		if (car->getCurrent_Speed() < 0.0f) {
+			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5);
+		}
+		car->setCurrent_Aceleration(car->getAceleration());
+		//car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
 		//return;
 	}
 
@@ -150,6 +154,7 @@ void activeKeys() {
 	}
 
 	if (!keystates['w'] && !keystates['s']) {
+		car->setCurrent_Aceleration(0);
 		if (car->getCurrent_Speed() > 0) {
 			if (fabs(car->getCurrent_Speed()) < 4.0) {
 				car->setCurrentTurn_speed(0);
@@ -160,7 +165,7 @@ void activeKeys() {
 				else if (keystates['d'])
 					car->setCurrentTurn_speed(car->getTurn_speed());
 			}
-			car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5);
 		}
 		else if (car->getCurrent_Speed() < 0) {
 			if (fabs(car->getCurrent_Speed()) < 4.0) {
@@ -172,7 +177,7 @@ void activeKeys() {
 				else if (keystates['d'])
 					car->setCurrentTurn_speed(-car->getTurn_speed());
 			}
-			car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5);
 		}
 	}
 }
@@ -197,13 +202,13 @@ void processMouseButtons(int button, int state, int xx, int yy)
 	//stop tracking the mouse
 	else if (state == GLUT_UP) {
 		if (tracking == 1) {
-			camera->angleAroundPlayer -= (xx - startX);
-			camera->pitch += (yy - startY);
+			camera->setAngleAroundPlayer(camera->getAngleAroundPlayer() - (xx - startX));
+			camera->setPitch(camera->getPitch() + (yy - startY));
 		}
 		else if (tracking == 2) {
-			camera->r += (yy - startY) * 0.01f;
-			if (camera->r < 0.1f)
-				camera->r = 0.1f;
+			camera->setR(camera->getR() + ((yy - startY) * 0.01f));
+			if (camera->getR() < 0.1f)
+				camera->setR(0.1f);
 		}
 		tracking = 0;
 	}
@@ -224,25 +229,25 @@ void processMouseMotion(int xx, int yy)
 	// left mouse button: move camera
 	if (tracking == 1) {
 
-		alphaAux = camera->angleAroundPlayer + deltaX;
-		betaAux = camera->pitch + deltaY;
+		alphaAux = camera->getAngleAroundPlayer() + deltaX;
+		betaAux = camera->getPitch() + deltaY;
 
 		if (betaAux > 85.0f)
 			betaAux = 85.0f;
 		else if (betaAux < -85.0f)
 			betaAux = -85.0f;
-		rAux = camera->r;
+		rAux = camera->getR();
 	}
 	// right mouse button: zoom
 	else if (tracking == 2) {
-		alphaAux = camera->angleAroundPlayer;
-		betaAux = camera->angleAroundPlayer;
-		rAux = camera->r + (deltaY * 0.01f);
+		alphaAux = camera->getAngleAroundPlayer();
+		betaAux = camera->getAngleAroundPlayer();
+		rAux = camera->getR() + (deltaY * 0.01f);
 		if (rAux < 0.1f)
 			rAux = 0.1f;
 	}
 
-	//camera->calculate(rAux, alphaAux, betaAux);
+	camera->calculate(rAux, alphaAux, betaAux);
 
 	//  uncomment this if not using an idle func
 	//	glutPostRedisplay();
@@ -251,11 +256,11 @@ void processMouseMotion(int xx, int yy)
 
 void mouseWheel(int wheel, int direction, int x, int y) {
 
-	camera->r += direction * 0.1f;
-	if (camera->r < 0.1f)
-		camera->r = 0.1f;
+	camera->setR(camera->getR() + (direction * 0.1f));
+	if (camera->getR() < 0.1f)
+		camera->setR(0.1f);
 
-	camera->calculate(camera->r, camera->angleAroundPlayer, camera->pitch);
+	camera->move();
 
 	//  uncomment this if not using an idle func
 	//	glutPostRedisplay();
@@ -297,13 +302,7 @@ void changeSize(int w, int h) {
 	// set the projection matrix
 	ratio = (1.0f * w) / h;
 	loadIdentity(PROJECTION);
-	if (secondView || thirdView) {
-		perspective(90.0f, ratio, 0.1f, 1000.0f);
-	}
-	else if (firstView) {
-		//ortho(0.0f, w, h, 0.0f, 0.0f, -1.0f);
-		ortho(-500, 500, -101, 101, -200.0f, 200.0f);
-	}
+	camera->view(ratio);
 }
 
 void renderScene(void) {
@@ -316,76 +315,56 @@ void renderScene(void) {
 	loadIdentity(VIEW);
 	loadIdentity(MODEL);
 	// set the camera using a function similar to gluLookAt
-	if (firstView) {
-		camera->pitch = 90.0f;
-		camera->setCamX(0.0f);
-		camera->setCamY(150.0f);
-		camera->setCamZ(0.08f);
-		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 1, 0, 0);
-	}
-	else if (secondView) {
-		//camera->r = 105.0f;
-		camera->pitch = 90.0f;
-		camera->setCamX(10.0f);
-		camera->setCamY(150.0f);
-		camera->setCamZ(0.08f);
-		std::cout << camera->getCamX() << " valor de x " << camera->getCamY() << " valor de y " << camera->getCamZ() << " valor de z " << std::endl;
-		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), 0, 0, 0, 1, 0, 0);
-
-	}
-	else if (thirdView) {
-		camera->r = 20.0f;
-		camera->pitch = 15.0f;
-		camera->move(front, car->current_rotation[1], car->current_position[0], car->current_position[1], car->current_position[2]);
-		lookAt(camera->getCamX(), camera->getCamY(), camera->getCamZ(), car->current_position[0], 0, car->current_position[2], 0, 1, 0);
-	}
+	camera->lookat();
 
 	glUseProgram(shader.getProgramIndex());
 	glUniform4fv(lPos_uniformId, 1, lightPos);
 	// use our shader
-	terrain->renderTerrain(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	//terrain->renderTerrain(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	//Oranges movement
 	int i;
 	for (i = 0; i < 5; i++){
 		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 			orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
 			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
-			orange[i]->createOrangeMesh();
+			orange[i]->createMesh();
 		}
-		orange[i]->move(globalOrangesAccelaration);
-		orange[i]->renderOrange(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+		orange[i]->setAceleration(globalOrangesAccelaration);
+		orange[i]->move();
+		orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
 	globalOrangesAccelaration += 0.0002;
 
-	butter->renderButter(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	activeKeys();
+	for each(Entity* entity in entities) {
+		entity->move();
+		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	}
+	//butter->renderButter(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 
 	//float res[4];
 	//multMatrixPoint(VIEW, lightPos, res);   //lightPos definido em World Coord so is converted to eye space
 	//glUniform4fv(lPos_uniformId, 1, res); 
-	activeKeys();
-	car->move();
-	car->renderCar(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	//activeKeys();
+	//car->move();
+	//car->renderCar(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	//send the light position in eye coordinates
-	 //efeito capacete do mineiro, ou seja lighPos foi definido em eye coord
+	//efeito capacete do mineiro, ou seja lighPos foi definido em eye coord
 	glutSwapBuffers();
 }
 
 void init()
 {
 
-	car->createCarMesh();
-	terrain->createTerrainMesh();
+	for each(Entity* entity in entities) {
+		entity->createMesh();
+	}
 
 	//Initialize oranges
 	int i;
 	for (i = 0; i < 5; i++){
-		orange[i]->createOrangeMesh();
+		orange[i]->createMesh();
 	}
-
-	butter->createButterMesh();
-	
-
-	camera->calculate(camera->r, camera->angleAroundPlayer, camera->pitch);
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
@@ -409,11 +388,11 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(WinX, WinY);
 	WindowHandle = glutCreateWindow(CAPTION);
 
-	if (camera == NULL)
-		camera = new Camera();
-
 	if (car == NULL)
 		car = new Car();
+
+	if (camera == NULL)
+		camera = new Camera(car);
 
 	if (terrain == NULL)
 		terrain = new Terrain();
@@ -428,7 +407,9 @@ int main(int argc, char **argv) {
 	if (butter == NULL)
 		butter = new Butter(-20 + (rand() % 40), 0.3f, -20 + (rand() % 40));
 
-
+	entities.push_back(car);
+	entities.push_back(terrain);
+	entities.push_back(butter);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);

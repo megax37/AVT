@@ -18,27 +18,22 @@
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
+#include "Entity.h"
 
 
-class Butter {
+class Butter : public Entity {
 private:
 	float position[3];
 public:
-	float current_position[3];
-	float current_rotation[3];
-	MyMesh mesh[1];
-	int meshLength = 1;
-	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
-
 
 	Butter();
 	Butter(float x, float y, float z);
 
-	void createButterMesh();
+	void createMesh();
+	void move();
+	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
-	void renderButter(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
-	MyMesh* getMesh() { return mesh; }
-	int getMeshLength() { return meshLength; }
+	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
 };
 
 #endif
