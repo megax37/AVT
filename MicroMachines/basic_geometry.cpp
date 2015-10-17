@@ -170,7 +170,7 @@ void createCone(float height, float baseRadius, int sides, MyMesh *mesh, int obj
 	//		-baseRadius,	height*2.0f,
 	//	};
 
-	computeVAO((p.size() - 4) / 2, &(p[2]), &(p[0]), sides, 0.0f, mesh, objId);
+	computeVAO(((int) p.size() - 4) / 2, &(p[2]), &(p[0]), sides, 0.0f, mesh, objId);
 }
 
 

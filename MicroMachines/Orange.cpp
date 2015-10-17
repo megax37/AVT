@@ -11,9 +11,9 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 extern float mNormal3x3[9];
 
 Orange::Orange() : Entity() {
-	initial_velocity[0] = 0.2 + (rand() % 100) / 100;
+	initial_velocity[0] = 0.2f + (rand() % 100) / 100;
 	initial_velocity[1] = 0;
-	initial_velocity[2] = 0.2 + (rand() % 100) / 100;
+	initial_velocity[2] = 0.2f + (rand() % 100) / 100;
 }
 
 Orange::Orange(float x, float y, float z) : Entity(1) {
@@ -21,9 +21,9 @@ Orange::Orange(float x, float y, float z) : Entity(1) {
 		current_position[0] = x;
 		current_position[1] = y;
 		current_position[2] = z;
-		initial_velocity[0] = 0.2 + (rand() % 101) / 100;
+		initial_velocity[0] = 0.2f + (rand() % 101) / 100;
 		initial_velocity[1] = 0;
-		initial_velocity[2] = 0.2 + (rand() % 101) / 100;
+		initial_velocity[2] = 0.2f + (rand() % 101) / 100;
 	}
 }
 

@@ -124,7 +124,7 @@ void activeKeys() {
 	if (keystates['w']) {
 		car->setFront(true);
 		if (car->getCurrent_Speed() > 0.0f) {
-			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5);
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		car->setCurrent_Aceleration(-car->getAceleration());
 		//car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
@@ -135,7 +135,7 @@ void activeKeys() {
 		car->setFront(false);
 
 		if (car->getCurrent_Speed() < 0.0f) {
-			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5);
+			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 		car->setCurrent_Aceleration(car->getAceleration());
 		//car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
@@ -165,7 +165,7 @@ void activeKeys() {
 				else if (keystates['d'])
 					car->setCurrentTurn_speed(car->getTurn_speed());
 			}
-			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5);
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		else if (car->getCurrent_Speed() < 0) {
 			if (fabs(car->getCurrent_Speed()) < 4.0) {
@@ -177,7 +177,7 @@ void activeKeys() {
 				else if (keystates['d'])
 					car->setCurrentTurn_speed(-car->getTurn_speed());
 			}
-			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5);
+			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 	}
 }
@@ -307,7 +307,7 @@ void changeSize(int w, int h) {
 
 void renderScene(void) {
 
-	GLint loc;
+	//GLint loc;
 	FrameCount++;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1, 1, 1, 1);
@@ -326,14 +326,14 @@ void renderScene(void) {
 	for (i = 0; i < 5; i++){
 		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 			orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
+			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
 			orange[i]->createMesh();
 		}
 		orange[i]->setAceleration(globalOrangesAccelaration);
 		orange[i]->move();
 		orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
-	globalOrangesAccelaration += 0.0002;
+	globalOrangesAccelaration += 0.0002f;
 
 	activeKeys();
 	for each(Entity* entity in entities) {
@@ -401,11 +401,11 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < 5; i++){
 		if (orange[i] == NULL)
 			//Spawns an orange between -100 and 100
-			orange[i] = new Orange(-100 + rand() % 200, 3.0f, -100 + rand() % 200);
+			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
 	}
 
 	if (butter == NULL)
-		butter = new Butter(-20 + (rand() % 40), 0.3f, -20 + (rand() % 40));
+		butter = new Butter(-20.0f + (rand() % 40), 0.3f, -20.0f + (rand() % 40));
 
 	entities.push_back(car);
 	entities.push_back(terrain);

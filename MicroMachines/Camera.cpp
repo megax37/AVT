@@ -75,7 +75,7 @@ void Camera::calculate(float newR, float newAngleAroundPlayer, float newPitch) {
 void Camera::move() {
 	float theta = car->current_rotation[1] + angleAroundPlayer;
 	float offsetX = r * cos(pitch * 3.14f / 180.0f) * sin(theta * 3.14f / 180.0f);
-	float offsetZ = r * cos(pitch * 3.14f / 180.0f) * cos(theta * (PI / 180.0f));
+	float offsetZ = r * cos(pitch * 3.14f / 180.0f) * cos(theta * ((float) PI / 180.0f));
 	if (car->getFront()) {
 		camX = car->current_position[0] + offsetX;
 		camZ = car->current_position[2] + offsetZ;

@@ -567,7 +567,7 @@ VSShaderLib::textFileRead(std::string fileName) {
 
 			if (count > 0) {
 				content = (char *)malloc(sizeof(char) * (count+1));
-				count = fread(content,sizeof(char),count,fp);
+				count = (int) fread(content,sizeof(char),count,fp);
 				content[count] = '\0';
 			}
 			fclose(fp);
