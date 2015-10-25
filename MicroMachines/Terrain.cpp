@@ -3,6 +3,7 @@
 
 #include "Terrain.h"
 #define PI 3.14159265
+
 /// The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
 extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
@@ -10,7 +11,7 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Terrain::Terrain() : Entity(5) {}
+Terrain::Terrain() : Entity(2) {}
 
 void Terrain::createMesh() {
 
@@ -29,13 +30,28 @@ void Terrain::createMesh() {
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
+	mesh[objId].position[0] = -100.0f;
+	mesh[objId].position[1] = -5.0f;
+	mesh[objId].position[2] = -100.0f;
+	mesh[objId].vaoElements = 1;
+	createCube(mesh, objId);
+	//createPlan(mesh, objId);
+
+	objId = 1;
+	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
+	mesh[objId].mat.shininess = shininess;
+	mesh[objId].mat.texCount = texcount;
 	mesh[objId].position[0] = 0.0f;
-	mesh[objId].position[1] = 0.0f;
+	mesh[objId].position[1] = -55.0f;
 	mesh[objId].position[2] = 0.0f;
-	createPlan(mesh, objId);
+	mesh[objId].vaoElements = 4;
+	createCube(mesh, objId);
 
 	// create geometry and VAO of the road
-	float amb1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	/*float amb1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float spec1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float emissive1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -55,7 +71,6 @@ void Terrain::createMesh() {
 	createCube(mesh, objId);
 
 	// create geometry and VAO of the road line
-
 	float amb2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float diff2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float spec2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -96,7 +111,6 @@ void Terrain::createMesh() {
 	createCube(mesh, objId);
 
 	// create geometry and VAO of the road borders 2
-
 	objId = 4;
 	memcpy(mesh[objId].mat.ambient, amb3, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff3, 4 * sizeof(float));
@@ -107,7 +121,7 @@ void Terrain::createMesh() {
 	mesh[objId].position[0] = -100.0f;
 	mesh[objId].position[1] = 0.03f;
 	mesh[objId].position[2] = 30.0f;
-	createCube(mesh, objId);
+	createCube(mesh, objId);*/
 
 
 }
@@ -117,47 +131,65 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 	GLuint loc;
 
 	for (int i = 0; i < meshLength; ++i) {
-		// send the material
-		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
-		glUniform4fv(loc, 1, mesh[i].mat.ambient);
-		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
-		glUniform4fv(loc, 1, mesh[i].mat.diffuse);
-		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
-		glUniform4fv(loc, 1, mesh[i].mat.specular);
-		loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
-		glUniform1f(loc, mesh[i].mat.shininess);
-		pushMatrix(MODEL);
+		for (int j = 0; j < mesh[i].vaoElements; j++) {
+			// send the material
+			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
+			glUniform4fv(loc, 1, mesh[i].mat.ambient);
+			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
+			glUniform4fv(loc, 1, mesh[i].mat.diffuse);
+			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
+			glUniform4fv(loc, 1, mesh[i].mat.specular);
+			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
+			glUniform1f(loc, mesh[i].mat.shininess);
+			pushMatrix(MODEL);
 
-		translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
+			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
+			if (i == 0) {
+				scale(MODEL, 200.0f, 5.0f, 200.0f);
+			}
+			if (i == 1) {				
+				if (j == 0) {
+					translate(MODEL, 80.0f, 0, -90.0f);
+				}
+				else if (j == 1) {
+					translate(MODEL, -90.0f, 0, -90.0f);
+				}
+				else if (j == 2) {
+					translate(MODEL, 80.0f, 0, 80.0f);
+				}
+				else if (j == 3) {
+					translate(MODEL, -90.0f, 0, 80.0f);
+				}
+				scale(MODEL, 10.0f, 50.0f, 10.0f);
+			}
 
-		if (i == 1) {
-			scale(MODEL, 200.0f, 0.0f, 30.0f);
+			/*if (i == 1) {
+				scale(MODEL, 200.0f, 0.0f, 30.0f);
+				}
+				if (i == 2) {
+				scale(MODEL, 200.0f, 0.0f, 0.9f);
+				}
+				if (i == 3) {
+				scale(MODEL, 200.0f, 0.0f, 12.0f);
+				}
+				if (i == 4) {
+				scale(MODEL, 200.0f, 0.0f, 12.0f);
+				}*/
+
+			// send matrices to OGL
+			computeDerivedMatrix(PROJ_VIEW_MODEL);
+			glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
+			glUniformMatrix4fv(pvm_uniformId, 1, GL_FALSE, mCompMatrix[PROJ_VIEW_MODEL]);
+			computeNormalMatrix3x3();
+			glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
+
+			// Render mesh
+			glBindVertexArray(mesh[i].vao);
+			glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			popMatrix(MODEL);
 		}
-
-		if (i == 2) {
-			scale(MODEL, 200.0f, 0.0f, 0.9f);
-		}
-
-		if (i == 3) {
-			scale(MODEL, 200.0f, 0.0f, 12.0f);
-		}
-		if (i == 4) {
-			scale(MODEL, 200.0f, 0.0f, 12.0f);
-		}
-
-		// send matrices to OGL
-		computeDerivedMatrix(PROJ_VIEW_MODEL);
-		glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
-		glUniformMatrix4fv(pvm_uniformId, 1, GL_FALSE, mCompMatrix[PROJ_VIEW_MODEL]);
-		computeNormalMatrix3x3();
-		glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
-
-		// Render mesh
-		glBindVertexArray(mesh[i].vao);
-		glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-
-		popMatrix(MODEL);
 	}
 }
 

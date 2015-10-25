@@ -33,7 +33,7 @@ void Camera::chooseView(unsigned char key) {
 
 void Camera::view(float ratio) {
 	if (orthoView) {
-		ortho(-500, 500, -101, 101, -200.0f, 200.0f);
+		ortho(-200, 200, -200, 200, -200.0f, 200.0f);
 	}
 	else if (perspectiveView || thirdPersonView) {
 		perspective(90.0f, ratio, 0.1f, 1000.0f);
@@ -44,23 +44,23 @@ void Camera::lookat() {
 	if (orthoView) {
 		pitch = 90.0f;
 		camX = 0.0f;
-		camY = 150.0f;
-		camZ = 0.08f;
-		lookAt(camX, camY, camZ, 0, 0, 0, 1, 0, 0);
+		camY = 105.0f;
+		camZ = 0.0f;
+		lookAt(camX, camY, camZ, 0, 0, 0, 0, 0, 1);
 	}
 	else if (perspectiveView) {
 		//camera->r = 105.0f;
 		pitch = 90.0f;
-		camX = 10.0f;
-		camY = 150.0f;
-		camZ = 0.08f;
+		camX = 0.0f;
+		camY = 100.0f;
+		camZ = -40.0f;
 		//std::cout << camX << " valor de x " << camY << " valor de y " << camZ << " valor de z " << std::endl;
-		lookAt(camX, camY, camZ, 0, 0, 0, 1, 0, 0);
+		lookAt(camX, camY, camZ, 0, 0, -20.0f, 0, 0, 1);
 
 	}
 	else if (thirdPersonView) {
-		r = 20.0f;
-		pitch = 15.0f;
+		r = 10.0f;
+		pitch = 25.0f;
 		move();
 		lookAt(camX, camY, camZ, car->current_position[0], 0, car->current_position[2], 0, 1, 0);
 	}
@@ -77,13 +77,13 @@ void Camera::move() {
 	float offsetX = r * cos(pitch * 3.14f / 180.0f) * sin(theta * 3.14f / 180.0f);
 	float offsetZ = r * cos(pitch * 3.14f / 180.0f) * cos(theta * ((float) PI / 180.0f));
 	if (car->getFront()) {
-		camX = car->current_position[0] + offsetX;
-		camZ = car->current_position[2] + offsetZ;
-	}
-	else {
 		camX = car->current_position[0] - offsetX;
 		camZ = car->current_position[2] - offsetZ;
 	}
+	/*else {
+		camX = car->current_position[0] + offsetX;
+		camZ = car->current_position[2] + offsetZ;
+	}*/
 	camY = car->current_position[1] + (r *   						     sin(pitch * 3.14f / 180.0f));
 
 }

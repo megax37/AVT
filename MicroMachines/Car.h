@@ -22,12 +22,12 @@
 
 class Car : public Entity {
 private:
-	float max_velocity = 25;
+	float max_velocity = 30;
 	float turn_speed = 160;
 	float current_speed = 0;
 	float currentTurn_speed = 0;
 	//MyMesh mesh[2];
-	float aceleration = 6.0;
+	float aceleration = 5.0;
 	float current_Aceleration = 0.0f;
 	bool front = true;
 	//int frame = 0;

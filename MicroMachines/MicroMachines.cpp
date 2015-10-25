@@ -123,30 +123,26 @@ void activeKeys() {
 
 	if (keystates['w']) {
 		car->setFront(true);
-		if (car->getCurrent_Speed() > 0.0f) {
-			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
-		}
-		car->setCurrent_Aceleration(-car->getAceleration());
-		//car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
-		//return;
-	}
-
-	if (keystates['s']) {
-		car->setFront(false);
-
 		if (car->getCurrent_Speed() < 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 		car->setCurrent_Aceleration(car->getAceleration());
-		//car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
-		//return;
 	}
 
-	if ((keystates['a'] && keystates['w']) || (keystates['a'] && keystates['s'])) {
-		car->setCurrentTurn_speed(car->getTurn_speed());
+	if (keystates['s']) {
+		//car->setFront(false);
+
+		if (car->getCurrent_Speed() > 0.0f) {
+			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
+		}
+		car->setCurrent_Aceleration(-car->getAceleration());
 	}
-	else if ((keystates['d'] && keystates['w']) || (keystates['d'] && keystates['s'])) {
+
+	if ((keystates['d'] && keystates['w']) || (keystates['a'] && keystates['s'])) {
 		car->setCurrentTurn_speed(-car->getTurn_speed());
+	}
+	else if ((keystates['a'] && keystates['w']) || (keystates['d'] && keystates['s'])) {
+		car->setCurrentTurn_speed(car->getTurn_speed());
 	}
 
 	if (!keystates['a'] && !keystates['d']) {
@@ -156,26 +152,26 @@ void activeKeys() {
 	if (!keystates['w'] && !keystates['s']) {
 		car->setCurrent_Aceleration(0);
 		if (car->getCurrent_Speed() > 0) {
-			if (fabs(car->getCurrent_Speed()) < 4.0) {
+			if (car->getCurrent_Speed() < 2.0) {
 				car->setCurrentTurn_speed(0);
 			}
 			else {
 				if (keystates['a'])
-					car->setCurrentTurn_speed(-car->getTurn_speed());
-				else if (keystates['d'])
 					car->setCurrentTurn_speed(car->getTurn_speed());
+				else if (keystates['d'])
+					car->setCurrentTurn_speed(-car->getTurn_speed());
 			}
 			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		else if (car->getCurrent_Speed() < 0) {
-			if (fabs(car->getCurrent_Speed()) < 4.0) {
+			if (car->getCurrent_Speed() > -2.0) {
 				car->setCurrentTurn_speed(0);
 			}
 			else {
 				if (keystates['a'])
-					car->setCurrentTurn_speed(car->getTurn_speed());
-				else if (keystates['d'])
 					car->setCurrentTurn_speed(-car->getTurn_speed());
+				else if (keystates['d'])
+					car->setCurrentTurn_speed(car->getTurn_speed());
 			}
 			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
