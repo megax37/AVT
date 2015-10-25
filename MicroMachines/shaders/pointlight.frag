@@ -11,7 +11,17 @@ struct Materials {
 	int texCount;
 };
 
+struct Light {
+	vec4 diffuse;
+	vec4 ambient;
+	vec4 specular;
+	vec4 emissive;
+	float shininess;
+	int texCount;
+};
+
 uniform Materials mat;
+uniform Light light;
 
 in Data {
 	vec3 normal;
@@ -29,13 +39,14 @@ void main() {
 
 	float intensity = max(dot(n,l), 0.0);
 
-	
 	if (intensity > 0.0) {
-
 		vec3 h = normalize(l + e);
 		float intSpec = max(dot(h,n), 0.0);
 		spec = mat.specular * pow(intSpec, mat.shininess);
 	}
 	
-	colorOut = max(intensity * mat.diffuse + spec, mat.ambient);
+	vec4 scatteredLight = light.ambient + light.diffuse * intensity;
+	vec4 reflectedLight = light.diffuse * spec;
+	vec4 rgb = min(mat.diffuse * scatteredLight + reflectedLight, vec4(1.0));
+	colorOut = rgb;
 }
