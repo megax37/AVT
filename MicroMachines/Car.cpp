@@ -36,14 +36,21 @@ void Car::createMesh() {
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 
+	float amb1[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float spec1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float emissive1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float shininess1 = 100.0f;
+	int texcount1 = 0;
+
 	// create geometry and VAO of the cylinder
 	objId = 1;
-	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
-	mesh[objId].mat.shininess = shininess;
-	mesh[objId].mat.texCount = texcount;
+	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.emissive, emissive1, 4 * sizeof(float));
+	mesh[objId].mat.shininess = shininess1;
+	mesh[objId].mat.texCount = texcount1;
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.8f;
 	mesh[objId].position[2] = 0.0f;

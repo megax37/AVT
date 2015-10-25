@@ -21,6 +21,7 @@
 #include "Terrain.h"
 #include "Orange.h"
 #include "Butter.h"
+#include "DirectionalLight.h"
 
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
@@ -34,9 +35,11 @@ Car *car;
 Terrain *terrain;
 Butter *butter;
 Orange *orange[5];
+DirectionalLight *dirLight;
 float globalOrangesAccelaration = 0;
 
 std::vector<Entity*> entities;
+std::vector<LightSource*> lights;
 
 //struct MyMesh mesh[4];
 //int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
@@ -65,7 +68,6 @@ bool thirdView = true;
 // Frame counting and FPS computation
 long myTime, timebase = 0, frame = 0;
 char s[32];
-float lightPos[4] = { 4.0f, 6.0f, 2.0f, 1.0f };
 
 void timer(int value)
 {
@@ -123,19 +125,23 @@ void activeKeys() {
 
 	if (keystates['w']) {
 		car->setFront(true);
-		if (car->getCurrent_Speed() < 0.0f) {
+		if (car->getCurrent_Speed() > 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 		car->setCurrent_Aceleration(car->getAceleration());
+		//car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
+		//return;
 	}
 
 	if (keystates['s']) {
 		//car->setFront(false);
 
-		if (car->getCurrent_Speed() > 0.0f) {
+		if (car->getCurrent_Speed() < 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		car->setCurrent_Aceleration(-car->getAceleration());
+		//car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
+		//return;
 	}
 
 	if ((keystates['d'] && keystates['w']) || (keystates['a'] && keystates['s'])) {
@@ -182,11 +188,11 @@ void activeKeys() {
 //
 // Mouse Events
 //
-
 void processMouseButtons(int button, int state, int xx, int yy)
 {
 	// start tracking the mouse
 	if (state == GLUT_DOWN)  {
+		camera->setFreeView(true);
 		startX = xx;
 		startY = yy;
 		if (button == GLUT_LEFT_BUTTON)
@@ -202,11 +208,10 @@ void processMouseButtons(int button, int state, int xx, int yy)
 			camera->setPitch(camera->getPitch() + (yy - startY));
 		}
 		else if (tracking == 2) {
-			camera->setR(camera->getR() + ((yy - startY) * 0.01f));
-			if (camera->getR() < 0.1f)
-				camera->setR(0.1f);
+			camera->setAngleAroundPlayer(camera->getAngleAroundPlayer() - (xx - startX));
 		}
 		tracking = 0;
+		camera->setFreeView(false);
 	}
 }
 
@@ -214,12 +219,11 @@ void processMouseButtons(int button, int state, int xx, int yy)
 
 void processMouseMotion(int xx, int yy)
 {
-
 	int deltaX, deltaY;
 	float alphaAux, betaAux;
 	float rAux;
 
-	deltaX = xx - startX;
+	deltaX = -xx + startX;
 	deltaY = yy - startY;
 
 	// left mouse button: move camera
@@ -231,16 +235,16 @@ void processMouseMotion(int xx, int yy)
 		if (betaAux > 85.0f)
 			betaAux = 85.0f;
 		else if (betaAux < -85.0f)
-			betaAux = -85.0f;
+			betaAux  = - 85.0f;
 		rAux = camera->getR();
 	}
 	// right mouse button: zoom
 	else if (tracking == 2) {
-		alphaAux = camera->getAngleAroundPlayer();
-		betaAux = camera->getAngleAroundPlayer();
-		rAux = camera->getR() + (deltaY * 0.01f);
-		if (rAux < 0.1f)
-			rAux = 0.1f;
+		alphaAux = camera->getAngleAroundPlayer() + deltaX;
+		camera->setAngleAroundPlayer(alphaAux);
+		betaAux = camera->getPitch();
+		rAux = camera->getR();
+
 	}
 
 	camera->calculate(rAux, alphaAux, betaAux);
@@ -314,10 +318,16 @@ void renderScene(void) {
 	camera->lookat();
 
 	glUseProgram(shader.getProgramIndex());
-	glUniform4fv(lPos_uniformId, 1, lightPos);
-	// use our shader
-	//terrain->renderTerrain(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	//Oranges movement
+	for each(LightSource* light in lights) {
+		light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	}
+
+	activeKeys();
+	for each(Entity* entity in entities) {
+		entity->move();
+		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+	}
+
 	int i;
 	for (i = 0; i < 5; i++){
 		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
@@ -331,26 +341,15 @@ void renderScene(void) {
 	}
 	globalOrangesAccelaration += 0.0002f;
 
-	activeKeys();
-	for each(Entity* entity in entities) {
-		entity->move();
-		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	}
-	//butter->renderButter(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-
-	//float res[4];
-	//multMatrixPoint(VIEW, lightPos, res);   //lightPos definido em World Coord so is converted to eye space
-	//glUniform4fv(lPos_uniformId, 1, res); 
-	//activeKeys();
-	//car->move();
-	//car->renderCar(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	//send the light position in eye coordinates
-	//efeito capacete do mineiro, ou seja lighPos foi definido em eye coord
 	glutSwapBuffers();
 }
 
 void init()
 {
+
+	for each(LightSource* light in lights) {
+		light->createMesh();
+	}
 
 	for each(Entity* entity in entities) {
 		entity->createMesh();
@@ -403,9 +402,13 @@ int main(int argc, char **argv) {
 	if (butter == NULL)
 		butter = new Butter(-20.0f + (rand() % 40), 0.3f, -20.0f + (rand() % 40));
 
+	if (dirLight == NULL)
+		dirLight = new DirectionalLight(100.0f, 200.0f, 0.0f, 0.0f);
+
 	entities.push_back(car);
 	entities.push_back(terrain);
 	entities.push_back(butter);
+	lights.push_back(dirLight);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);

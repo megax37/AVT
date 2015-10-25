@@ -41,7 +41,11 @@ void Camera::view(float ratio) {
 }
 
 void Camera::lookat() {
-	if (orthoView) {
+	if (freeView) {
+		lookAt(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
+		return;
+	}
+	else if (orthoView) {
 		pitch = 90.0f;
 		camX = 0.0f;
 		camY = 105.0f;
@@ -49,18 +53,16 @@ void Camera::lookat() {
 		lookAt(camX, camY, camZ, 0, 0, 0, 0, 0, 1);
 	}
 	else if (perspectiveView) {
-		//camera->r = 105.0f;
 		pitch = 90.0f;
 		camX = 0.0f;
 		camY = 100.0f;
 		camZ = -40.0f;
-		//std::cout << camX << " valor de x " << camY << " valor de y " << camZ << " valor de z " << std::endl;
 		lookAt(camX, camY, camZ, 0, 0, -20.0f, 0, 0, 1);
 
 	}
 	else if (thirdPersonView) {
-		r = 10.0f;
 		pitch = 25.0f;
+		angleAroundPlayer = -5.0;
 		move();
 		lookAt(camX, camY, camZ, car->current_position[0], 0, car->current_position[2], 0, 1, 0);
 	}
@@ -80,10 +82,6 @@ void Camera::move() {
 		camX = car->current_position[0] - offsetX;
 		camZ = car->current_position[2] - offsetZ;
 	}
-	/*else {
-		camX = car->current_position[0] + offsetX;
-		camZ = car->current_position[2] + offsetZ;
-	}*/
 	camY = car->current_position[1] + (r *   						     sin(pitch * 3.14f / 180.0f));
 
 }
