@@ -16,6 +16,7 @@
 #include "AVTmathLib.h"
 #include "VertexAttrDef.h"
 #include "basic_geometry.h"
+#include "TGA.h"
 #include "Camera.h"
 #include "Car.h"
 #include "Terrain.h"
@@ -55,6 +56,8 @@ GLint pvm_uniformId;
 GLint vm_uniformId;
 GLint normal_uniformId;
 GLint lPos_uniformId;
+GLint tex_loc0;
+GLint texMode_uniformId;
 
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
@@ -125,7 +128,7 @@ void activeKeys() {
 
 	if (keystates['w']) {
 		car->setFront(true);
-		if (car->getCurrent_Speed() > 0.0f) {
+		if (car->getCurrent_Speed() < 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 		car->setCurrent_Aceleration(car->getAceleration());
@@ -136,7 +139,7 @@ void activeKeys() {
 	if (keystates['s']) {
 		//car->setFront(false);
 
-		if (car->getCurrent_Speed() < 0.0f) {
+		if (car->getCurrent_Speed() > 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		car->setCurrent_Aceleration(-car->getAceleration());
@@ -281,10 +284,12 @@ GLuint setupShaders() {
 
 	glLinkProgram(shader.getProgramIndex());
 
+	texMode_uniformId = glGetUniformLocation(shader.getProgramIndex(), "texMode");
 	pvm_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_pvm");
 	vm_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_viewModel");
 	normal_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_normal");
 	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
+	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
 
 	printf("InfoLog for Hello World Shader\n%s\n\n", shader.getAllInfoLogs().c_str());
 
@@ -318,6 +323,9 @@ void renderScene(void) {
 	camera->lookat();
 
 	glUseProgram(shader.getProgramIndex());
+
+	glUniform1i(texMode_uniformId, 0);
+
 	for each(LightSource* light in lights) {
 		light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
@@ -403,7 +411,7 @@ int main(int argc, char **argv) {
 		butter = new Butter(-20.0f + (rand() % 40), 0.3f, -20.0f + (rand() % 40));
 
 	if (dirLight == NULL)
-		dirLight = new DirectionalLight(100.0f, 200.0f, 0.0f, 0.0f);
+		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f);
 
 	entities.push_back(car);
 	entities.push_back(terrain);

@@ -20,15 +20,13 @@
 #include "basic_geometry.h"
 
 struct Light{
-	float diffuse[4];
-	float ambient[4];
-	float specular[4];
-	float emissive[4];
 	float position[4];
-	float shininess;
-	int texCount;
-	double cutOff;
-	double exponent;
+	float diffuse[4];
+	float specular[4];
+	float constantAttenuation = 1.0f, linearAttenuation = 0.1f, quadraticAttenuation = 0.0f;
+	float spotCutoff = 180;
+	float spotExponent = 0;
+	float spotDirection[3];
 };
 
 class LightSource {
@@ -38,6 +36,7 @@ protected:
 	int meshLength;
 	int frame = 0;
 	int objId = 0;
+	bool isActive = true;
 
 public:
 	LightSource();

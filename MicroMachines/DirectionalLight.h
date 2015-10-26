@@ -19,10 +19,9 @@
 #include "LightSource.h"
 
 class DirectionalLight : public LightSource {
-private:
-	float position[4];
+
 public:
-	DirectionalLight(float x, float y, float z, float alpha);
+	DirectionalLight(float x, float y, float z, float w);
 	~DirectionalLight();
 	void createMesh();
 	void draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);

@@ -59,11 +59,19 @@ tImageTGA *Load_TGA(char *strfilename)
 	int stride			= 0;						
 	int i				= 0;		
 	
-	if((pFile = fopen(strfilename, "rb")) == NULL) 
+	fopen_s(&pFile, strfilename, "rb");
+
+	if (pFile == NULL)
 	{
 		printf("Error loading tga file.\n");
 		return NULL;
 	}
+
+	/*if((pFile = fopen(strfilename, "rb")) == NULL) 
+	{
+		printf("Error loading tga file.\n");
+		return NULL;
+	}*/
 
 	pImgData = (tImageTGA*)malloc(sizeof(tImageTGA));
 	
