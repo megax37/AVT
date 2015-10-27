@@ -16,7 +16,7 @@
 #include "AVTmathLib.h"
 #include "VertexAttrDef.h"
 #include "basic_geometry.h"
-#include "TGA.h"
+//#include "TGA.h"
 #include "Camera.h"
 #include "Car.h"
 #include "Terrain.h"
@@ -325,6 +325,7 @@ void renderScene(void) {
 	glUseProgram(shader.getProgramIndex());
 
 	glUniform1i(texMode_uniformId, 0);
+	glUniform1i(tex_loc0, 0);
 
 	for each(LightSource* light in lights) {
 		light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);

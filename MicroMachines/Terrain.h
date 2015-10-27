@@ -4,7 +4,6 @@
 #include <math.h>
 #include <iostream>
 #include <sstream>
-
 #include <string>
 
 // include GLEW to access OpenGL 3.3 functions
@@ -14,17 +13,16 @@
 #include <GL/freeglut.h>
 
 // Use Very Simple Libs
-// Use Very Simple Libs
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
 #include "Entity.h"
+#include "TGA.h"
 
 
 class Terrain : public Entity {
-	/*private:
-	MyMesh mesh[5];
-	int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh*/
+private:
+	GLuint TextureArray[2];
 
 public:
 	Terrain();

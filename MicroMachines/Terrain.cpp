@@ -11,7 +11,11 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Terrain::Terrain() : Entity(2) {}
+Terrain::Terrain() : Entity(2) {
+	glGenTextures(2, TextureArray);
+	TGA_Texture(TextureArray, "lightwood.tga", 0);
+	TGA_Texture(TextureArray, "stone.tga", 1);
+}
 
 void Terrain::createMesh() {
 
@@ -21,7 +25,7 @@ void Terrain::createMesh() {
 	float spec[] = { 0.4f, 0.270f, 0.075f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
-	int texcount = 0;
+	int texcount = 1;
 
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
@@ -30,12 +34,12 @@ void Terrain::createMesh() {
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
+	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].position[0] = -100.0f;
 	mesh[objId].position[1] = -5.0f;
 	mesh[objId].position[2] = -100.0f;
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
-	//createPlan(mesh, objId);
 
 	objId = 1;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
@@ -44,6 +48,7 @@ void Terrain::createMesh() {
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
+	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = -55.0f;
 	mesh[objId].position[2] = 0.0f;
@@ -131,6 +136,14 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 	GLuint loc;
 
 	for (int i = 0; i < meshLength; ++i) {
+
+		if (mesh[i].mat.texCount != 0) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
+			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
+			glUniform1i(loc, 2);
+		}
+
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
 			// send the material
 			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
@@ -190,7 +203,10 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 
 			popMatrix(MODEL);
 		}
+		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
+		glUniform1i(loc, 0);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Terrain::increasePosition(float dx, float dy, float dz) {}
