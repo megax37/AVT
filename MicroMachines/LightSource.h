@@ -23,9 +23,9 @@ struct Light{
 	float position[4];
 	float diffuse[4];
 	float specular[4];
-	float constantAttenuation = 1.0f, linearAttenuation = 0.1f, quadraticAttenuation = 0.0f;
-	float spotCutoff = 180;
-	float spotExponent = 0;
+	float constantAttenuation, linearAttenuation, quadraticAttenuation;
+	float spotCutoff;
+	float spotExponent;
 	float spotDirection[3];
 };
 

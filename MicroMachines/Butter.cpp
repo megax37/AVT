@@ -22,7 +22,7 @@ Butter::Butter(float x, float y, float z) : Entity(1) {
 
 void Butter::createMesh() {
 
-	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+	float amb[] = { 0.3f, 0.3f, 0.1f, 1.0f };
 	float diff[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 	float spec[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };

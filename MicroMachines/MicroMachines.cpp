@@ -24,6 +24,7 @@
 #include "Butter.h"
 #include "Road.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
@@ -39,7 +40,8 @@ Butter *butter;
 Orange *orange[5];
 Road *road;
 DirectionalLight *dirLight;
-float globalOrangesAccelaration = 0;
+PointLight *pointLight;
+float globalOrangesAccelaration = 0.0f;
 
 std::vector<Entity*> entities;
 std::vector<LightSource*> lights;
@@ -424,11 +426,14 @@ int main(int argc, char **argv) {
 	if (dirLight == NULL)
 		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f);
 
+	if (pointLight == NULL)
+		pointLight = new PointLight(0.0f, 5.0f, 0.0f, 1.0f);
+
 	entities.push_back(car);
 	entities.push_back(terrain);
 	entities.push_back(butter);
 	entities.push_back(road);
-	lights.push_back(dirLight);
+	lights.push_back(pointLight);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
