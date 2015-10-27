@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Terrain.h"
-#define PI 3.14159265
+#include "Road.h"
+#include "TGA.h"
 
 /// The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
@@ -11,18 +11,17 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Terrain::Terrain() : Entity(2) {
-	glGenTextures(2, TextureArray);
-	TGA_Texture(TextureArray, "lightwood.tga", 0);
-	TGA_Texture(TextureArray, "stone.tga", 1);
+
+Road::Road() : Entity(1) {
+	glGenTextures(1, TextureArray);
+	TGA_Texture(TextureArray, "road.tga", 0);
 }
 
-void Terrain::createMesh() {
+void Road::createMesh() {
 
-	// create geometry and VAO of the table
-	float amb[] = { 0.4f, 0.270f, 0.075f, 1.0f };
-	float diff[] = { 0.4f, 0.270f, 0.075f, 1.0f };
-	float spec[] = { 0.4f, 0.270f, 0.075f, 1.0f };
+	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+	float diff[] = { 0.8f, 0.6f, 0.4f, 1.0f };
+	float spec[] = { 0.8f, 0.8f, 0.8f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
 	int texcount = 1;
@@ -36,28 +35,14 @@ void Terrain::createMesh() {
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].position[0] = -100.0f;
-	mesh[objId].position[1] = -5.0f;
-	mesh[objId].position[2] = -100.0f;
-	mesh[objId].vaoElements = 1;
-	createCube(mesh, objId);
-
-	objId = 1;
-	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
-	mesh[objId].mat.shininess = shininess;
-	mesh[objId].mat.texCount = texcount;
-	mesh[objId].texUnits[0] = TextureArray[0];
-	mesh[objId].position[0] = 0.0f;
-	mesh[objId].position[1] = -55.0f;
+	mesh[objId].position[1] = 0.0f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].vaoElements = 4;
+	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 
 }
 
-void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
 
 	GLuint loc;
 
@@ -83,22 +68,7 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 
 			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
 			if (i == 0) {
-				scale(MODEL, 200.0f, 5.0f, 200.0f);
-			}
-			if (i == 1) {				
-				if (j == 0) {
-					translate(MODEL, 80.0f, 0, -90.0f);
-				}
-				else if (j == 1) {
-					translate(MODEL, -90.0f, 0, -90.0f);
-				}
-				else if (j == 2) {
-					translate(MODEL, 80.0f, 0, 80.0f);
-				}
-				else if (j == 3) {
-					translate(MODEL, -90.0f, 0, 80.0f);
-				}
-				scale(MODEL, 10.0f, 50.0f, 10.0f);
+				scale(MODEL, 100.0f, 0.2f, 10.0f);
 			}
 
 			// send matrices to OGL
@@ -115,14 +85,15 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 
 			popMatrix(MODEL);
 		}
+
 		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
 		glUniform1i(loc, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Terrain::increasePosition(float dx, float dy, float dz) {}
+void Road::increasePosition(float dx, float dy, float dz) {}
 
-void Terrain::increaseRotation(float dx, float dy, float dz) {}
+void Road::increaseRotation(float dx, float dy, float dz) {}
 
-void Terrain::move() {}
+void Road::move() {}
