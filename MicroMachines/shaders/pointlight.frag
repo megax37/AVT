@@ -28,8 +28,9 @@ struct Light {
 
 uniform Materials mat;
 
-const int numberOfLights = 1;
+const int numberOfLights = 2;
 uniform Light lights[numberOfLights];
+//uniform Light light0;
 
 in Data {
 	vec4 pos;
@@ -40,6 +41,8 @@ in Data {
 } DataIn;
 
 void main() {
+
+	//lights[0] = light0;
 	
 	//vec3 l = normalize(DataIn.lightDir);
 	vec3 n = normalize(DataIn.normal);

@@ -21,7 +21,7 @@
 class DirectionalLight : public LightSource {
 
 public:
-	DirectionalLight(float x, float y, float z, float w);
+	DirectionalLight(float x, float y, float z, float w, int lightID);
 	~DirectionalLight();
 	void createMesh();
 	void draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);

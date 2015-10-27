@@ -117,8 +117,28 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 'c':
 		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->getAngleAroundPlayer(), camera->getPitch(), camera->getR());
 		break;
-	case 'm': glEnable(GL_MULTISAMPLE); break;
-	case 'n': glDisable(GL_MULTISAMPLE); break;
+	case 'm': 
+		glEnable(GL_MULTISAMPLE); 
+		break;
+	case 'n': 
+		glDisable(GL_MULTISAMPLE); 
+		break;
+	case 'C':
+		if (pointLight->getActive()) {
+			pointLight->setActive(false);
+		}
+		else {
+			pointLight->setActive(true);
+		}
+		break;
+	case 'M':
+		if (dirLight->getActive()) {
+			dirLight->setActive(false);
+		}
+		else {
+			dirLight->setActive(true);
+		}
+		break;
 	}
 
 	keystates[key] = true;
@@ -427,17 +447,18 @@ int main(int argc, char **argv) {
 		butter = new Butter(-100.0f + (rand() % 200), 0.3f, -100.0f + (rand() % 200));
 	}
 
-	if (dirLight == NULL)
-		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f);
-
 	if (pointLight == NULL)
-		pointLight = new PointLight(0.0f, 5.0f, 0.0f, 1.0f);
+		pointLight = new PointLight(0.0f, 5.0f, 0.0f, 1.0f, 0);
+
+	if (dirLight == NULL)
+		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f, 1);
 
 	entities.push_back(car);
 	entities.push_back(terrain);
 	entities.push_back(butter);
 	entities.push_back(road);
 	lights.push_back(pointLight);
+	lights.push_back(dirLight);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);

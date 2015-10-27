@@ -10,7 +10,7 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-DirectionalLight::DirectionalLight(float x, float y, float z, float w) : LightSource(1) {
+DirectionalLight::DirectionalLight(float x, float y, float z, float w, int lightID) : LightSource(1, lightID) {
 	light->position[0] = x;
 	light->position[1] = y;
 	light->position[2] = z;
@@ -18,14 +18,14 @@ DirectionalLight::DirectionalLight(float x, float y, float z, float w) : LightSo
 }
 
 void DirectionalLight::createMesh() {
-	float l_diff[] = { 1.0f, 1.0f, 0.9f, 1.0f }; //luz amarela 
-	float l_spec[] = { 1.0f, 1.0f, 0.8f, 1.0f };
+	float l_diff[] = { 0.9f, 0.9f, 0.8f, 1.0f }; //luz amarela 
+	float l_spec[] = { 0.9f, 0.9f, 0.8f, 1.0f };
 	memcpy(light->diffuse, l_diff, 4 * sizeof(float));
 	memcpy(light->specular, l_spec, 4 * sizeof(float));
 
-	float amb[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // luz ambiente do sol
-	float diff[] = { 0.9f, 0.9f, 0.5f, 1.0f }; //luz amarela 
-	float spec[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float amb[] = { 0.9f, 0.9f, 0.5f, 1.0f }; // luz ambiente do sol
+	float diff[] = { 0.8f, 0.8f, 0.4f, 1.0f }; //luz amarela 
+	float spec[] = { 0.8f, 0.8f, 0.4f, 1.0f };
 	float emissive[] = { 0.9f, 0.9f, 0.5f, 1.0f };
 	float shininess = 120.0f;
 	int texcount = 0;
@@ -49,21 +49,21 @@ void DirectionalLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm
 	float res[4];
 	multMatrixPoint(VIEW, light->position, res);   //lightPos definido em World Coord so is converted to eye space
 
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].l_pos");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].l_pos");
 	glUniform4fv(loc, 1, res);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].diffuse");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].diffuse");
 	glUniform4fv(loc, 1, light->diffuse);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].specular");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].specular");
 	glUniform4fv(loc, 1, light->specular);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].constantAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].constantAttenuation");
 	glUniform1f(loc, light->constantAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].linearAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].linearAttenuation");
 	glUniform1f(loc, light->linearAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].quadraticAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].quadraticAttenuation");
 	glUniform1f(loc, light->quadraticAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].spotCutoff");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].spotCutoff");
 	glUniform1f(loc, light->spotCutoff);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].isActive");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].isActive");
 	glUniform1i(loc, isActive);
 
 	for (int i = 0; i < meshLength; ++i) {

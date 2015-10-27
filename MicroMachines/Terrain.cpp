@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "Terrain.h"
-#define PI 3.14159265
 
 /// The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
@@ -11,7 +10,7 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Terrain::Terrain() : Entity(2) {
+Terrain::Terrain() : Entity(3) {
 	glGenTextures(2, TextureArray);
 	TGA_Texture(TextureArray, "lightwood.tga", 0);
 	TGA_Texture(TextureArray, "stone.tga", 1);
@@ -55,6 +54,23 @@ void Terrain::createMesh() {
 	mesh[objId].vaoElements = 4;
 	createCube(mesh, objId);
 
+	float amb1[] = { 0.4f, 0.35f, 0.075f, 1.0f };
+	float diff1[] = { 0.5f, 0.4f, 0.075f, 1.0f };
+	float spec1[] = { 0.4f, 0.35f, 0.075f, 1.0f };
+
+	objId = 2;
+	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
+	mesh[objId].mat.shininess = shininess;
+	mesh[objId].mat.texCount = texcount;
+	mesh[objId].texUnits[0] = TextureArray[1];
+	mesh[objId].position[0] = -150.0f;
+	mesh[objId].position[1] = -56.0f;
+	mesh[objId].position[2] = -150.0f;
+	mesh[objId].vaoElements = 1;
+	createCube(mesh, objId);
 }
 
 void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
@@ -82,10 +98,12 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 			pushMatrix(MODEL);
 
 			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
+
 			if (i == 0) {
 				scale(MODEL, 200.0f, 5.0f, 200.0f);
 			}
-			if (i == 1) {				
+			else if (i == 1) {	
+
 				if (j == 0) {
 					translate(MODEL, 80.0f, 0, -90.0f);
 				}
@@ -99,6 +117,9 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 					translate(MODEL, -90.0f, 0, 80.0f);
 				}
 				scale(MODEL, 10.0f, 50.0f, 10.0f);
+			}
+			else if (i == 2) {
+				scale(MODEL, 300.0f, 1.0f, 300.0f);
 			}
 
 			// send matrices to OGL

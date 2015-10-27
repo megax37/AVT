@@ -36,15 +36,24 @@ protected:
 	int meshLength;
 	int frame = 0;
 	int objId = 0;
+	int lightID;
 	bool isActive = true;
 
 public:
 	LightSource();
-	LightSource(int meshCapacity);
+	LightSource(int meshCapacity, int lID);
 	~LightSource();
 
 	virtual void createMesh() = 0;
 	virtual void draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) = 0;
+
+	bool getActive() {
+		return isActive;
+	}
+
+	void setActive(bool active) {
+		isActive = active;
+	}
 
 };
 #endif

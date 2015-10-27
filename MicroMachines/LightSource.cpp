@@ -14,8 +14,9 @@ LightSource::LightSource() {
 	light = (Light*)malloc(sizeof(*light));
 }
 
-LightSource::LightSource(int meshCapacity) {
+LightSource::LightSource(int meshCapacity, int lID) {
 	light = (Light*)malloc(sizeof(*light));
 	mesh = (MyMesh*)malloc(meshCapacity * sizeof(*mesh));
 	meshLength = meshCapacity;
+	lightID = lID;
 }
