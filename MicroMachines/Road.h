@@ -1,11 +1,10 @@
-#ifndef __Orange__
-#define __Orange__
+#ifndef __Road__
+#define __Road__
 
 #include <math.h>
 #include <iostream>
 #include <sstream>
 #include <string>
-
 
 // include GLEW to access OpenGL 3.3 functions
 #include <GL/glew.h>
@@ -20,30 +19,17 @@
 #include "Entity.h"
 
 
-class Orange : public Entity {
+class Road : public Entity {
 private:
-	float position[3];
-	float aceleration = 0.0f;
 	GLuint TextureArray[1];
 
 public:
-
-	Orange();
-	Orange(float x, float y, float z);
+	Road();
 
 	void createMesh();
+	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
 	void move();
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
-	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
-
-	void setAceleration(float newAceleration) {
-		aceleration = newAceleration;
-	}
-
-	float getAceleration() {
-		return aceleration;
-	}
 };
-
 #endif

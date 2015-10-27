@@ -22,6 +22,7 @@
 #include "Terrain.h"
 #include "Orange.h"
 #include "Butter.h"
+#include "Road.h"
 #include "DirectionalLight.h"
 
 #define CAPTION "MicroMachines AVT"
@@ -36,6 +37,7 @@ Car *car;
 Terrain *terrain;
 Butter *butter;
 Orange *orange[5];
+Road *road;
 DirectionalLight *dirLight;
 float globalOrangesAccelaration = 0;
 
@@ -56,7 +58,7 @@ GLint pvm_uniformId;
 GLint vm_uniformId;
 GLint normal_uniformId;
 GLint lPos_uniformId;
-GLint tex_loc0;
+GLint tex_loc0, tex_loc1, tex_loc2;
 GLint texMode_uniformId;
 
 // Mouse Tracking Variables
@@ -290,6 +292,8 @@ GLuint setupShaders() {
 	normal_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_normal");
 	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
+	tex_loc1 = glGetUniformLocation(shader.getProgramIndex(), "texmap1");
+	tex_loc2 = glGetUniformLocation(shader.getProgramIndex(), "texmap2");
 
 	printf("InfoLog for Hello World Shader\n%s\n\n", shader.getAllInfoLogs().c_str());
 
@@ -326,6 +330,7 @@ void renderScene(void) {
 
 	glUniform1i(texMode_uniformId, 0);
 	glUniform1i(tex_loc0, 0);
+	glUniform1i(tex_loc1, 1);
 
 	for each(LightSource* light in lights) {
 		light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
@@ -401,15 +406,20 @@ int main(int argc, char **argv) {
 	if (terrain == NULL)
 		terrain = new Terrain();
 
+	if (road == NULL)
+		road = new Road();
+
+
 	//Orange respawn
 	for (int i = 0; i < 5; i++){
 		if (orange[i] == NULL)
 			//Spawns an orange between -100 and 100
 			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
+		//entities.push_back(orange[i]);
 	}
 
 	if (butter == NULL)
-		butter = new Butter(-20.0f + (rand() % 40), 0.3f, -20.0f + (rand() % 40));
+		butter = new Butter((10 * rand()) % 20, 0.3f, (10 * rand()) % 20);
 
 	if (dirLight == NULL)
 		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f);
@@ -417,6 +427,7 @@ int main(int argc, char **argv) {
 	entities.push_back(car);
 	entities.push_back(terrain);
 	entities.push_back(butter);
+	entities.push_back(road);
 	lights.push_back(dirLight);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);

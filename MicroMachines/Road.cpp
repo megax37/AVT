@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Orange.h"
+#include "Road.h"
 #include "TGA.h"
 
-#define PI 3.14159265
 /// The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
 extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
@@ -12,32 +11,17 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 /// The normal matrix
 extern float mNormal3x3[9];
 
-Orange::Orange() : Entity(1) {
-	initial_velocity[0] = 0.2f + (rand() % 100) / 100;
-	initial_velocity[1] = 0;
-	initial_velocity[2] = 0.2f + (rand() % 100) / 100;
+
+Road::Road() : Entity(1) {
 	glGenTextures(1, TextureArray);
-	TGA_Texture(TextureArray, "orange.tga", 0);
+	TGA_Texture(TextureArray, "road.tga", 0);
 }
 
-Orange::Orange(float x, float y, float z) : Entity(1) {
-	{
-		current_position[0] = x;
-		current_position[1] = y;
-		current_position[2] = z;
-		initial_velocity[0] = 0.2f + (rand() % 101) / 100;
-		initial_velocity[1] = 0;
-		initial_velocity[2] = 0.2f + (rand() % 101) / 100;
-		glGenTextures(1, TextureArray);
-		TGA_Texture(TextureArray, "orange.tga", 0);
-	}
-}
-
-void Orange::createMesh() {
+void Road::createMesh() {
 
 	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
-	float diff[] = { 1.0f, 0.5f, 0.0f, 1.0f };
-	float spec[] = { 1.0f, 0.5f, 0.0f, 1.0f };
+	float diff[] = { 0.8f, 0.6f, 0.4f, 1.0f };
+	float spec[] = { 0.8f, 0.8f, 0.8f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
 	int texcount = 1;
@@ -50,18 +34,17 @@ void Orange::createMesh() {
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
-	mesh[objId].position[0] = current_position[0];
-	mesh[objId].position[1] = current_position[1];
-	mesh[objId].position[2] = current_position[2];
+	mesh[objId].position[0] = -100.0f;
+	mesh[objId].position[1] = 0.0f;
+	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 1;
-	createSphere(3.0f, 20, mesh, objId);
+	createCube(mesh, objId);
 
 }
 
-void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
 
 	GLuint loc;
-
 
 	for (int i = 0; i < meshLength; ++i) {
 
@@ -83,10 +66,11 @@ void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 			glUniform1f(loc, mesh[i].mat.shininess);
 			pushMatrix(MODEL);
 
-			translate(MODEL, current_position[0], current_position[1], current_position[2]);
+			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
 			if (i == 0) {
-				scale(MODEL, 1.0f, 1.0f, 1.0f);
+				scale(MODEL, 100.0f, 0.2f, 10.0f);
 			}
+
 			// send matrices to OGL
 			computeDerivedMatrix(PROJ_VIEW_MODEL);
 			glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
@@ -101,27 +85,15 @@ void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 
 			popMatrix(MODEL);
 		}
+
 		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
 		glUniform1i(loc, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Orange::increasePosition(float dx, float dy, float dz) {
-	current_position[0] += dx;
-	current_position[1] += dy;
-	current_position[2] += dz;
-}
+void Road::increasePosition(float dx, float dy, float dz) {}
 
-void Orange::increaseRotation(float dx, float dy, float dz) {
-	current_rotation[0] += dx;
-	current_rotation[1] += dy;
-	current_rotation[2] += dz;
-}
+void Road::increaseRotation(float dx, float dy, float dz) {}
 
-void Orange::move(){
-	increaseRotation(0, 0, 160.0f *((1000.0f / 60.0f) / 1000.0f));
-	//float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
-	increasePosition(0, 0, initial_velocity[2] + aceleration);
-
-}
+void Road::move() {}
