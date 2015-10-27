@@ -69,8 +69,8 @@ void main() {
 
 				attenuation = 1.0 / 
 				(lights[i].constantAttenuation +
-				 lights[i].linearAttenuation * distance +
-				 lights[i].quadraticAttenuation * distance * distance);
+				 (lights[i].linearAttenuation * distance) +
+				 (lights[i].quadraticAttenuation * distance * distance));
 
 				if(lights[i].spotCutoff < 90.0) // Spotlight?
 				{
@@ -107,6 +107,8 @@ void main() {
 	if(texMode == 0) // No textures
 	{
 		colorOut = max(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, mat.ambient);
+		//totalDiffuse = totalDiffuse + mat.ambient;
+		//colorOut = min(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, vec4(1.0));
 	}
 	else if (texMode == 1) // Modulate diffuse color with texel color
 	{

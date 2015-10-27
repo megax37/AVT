@@ -14,7 +14,7 @@ Car::Car() : Entity(2) {}
 
 void Car::createMesh() {
 
-	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+	float amb[] = { 0.4f, 0.1f, 0.1f, 1.0f };
 	float diff[] = { 1.0f, 0.1f, 0.1f, 1.0f };
 	float spec[] = { 1.0f, 0.5f, 0.5f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -36,7 +36,7 @@ void Car::createMesh() {
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 
-	float amb1[] = { 0.2f, 0.15f, 0.1f, 1.0f };
+	float amb1[] = { 0.05f, 0.05f, 0.1f, 1.0f };
 	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float spec1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float emissive1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
