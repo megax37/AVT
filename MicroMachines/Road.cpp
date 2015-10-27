@@ -34,10 +34,10 @@ void Road::createMesh() {
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
-	mesh[objId].position[0] = -100.0f;
+	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.0f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].vaoElements = 1;
+	mesh[objId].vaoElements = 4;
 	createCube(mesh, objId);
 
 }
@@ -67,8 +67,24 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 			pushMatrix(MODEL);
 
 			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
-			if (i == 0) {
-				scale(MODEL, 100.0f, 0.2f, 10.0f);
+			if (i == 0){
+				if (j == 0){
+					translate(MODEL, 0.0f, 0.0f, -80.0f);
+				}
+				else if (j == 1) {
+					translate(MODEL, 50.0f, 0.0f, -80.0f);
+					rotate(MODEL, -45.0f, 0.0f, 1.0f,0.0f);
+					
+				}
+				else if (j == 2) {
+					translate(MODEL, 85.0f, 0.0f, -45.0f);
+					rotate(MODEL, -90.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 3) {
+					translate(MODEL, 85.0f, 0.0f, -45.0f);
+					rotate(MODEL, -90.0f, 0.0f, 1.0f, 0.0f);
+				}
+				scale(MODEL, 50.0f, 0.2f, 15.0f);
 			}
 
 			// send matrices to OGL
@@ -85,7 +101,6 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 
 			popMatrix(MODEL);
 		}
-
 		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
 		glUniform1i(loc, 0);
 	}
