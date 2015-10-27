@@ -1,8 +1,9 @@
 #include <math.h>
 #include <iostream>
 #include <sstream>
-
+#include <time.h>
 #include <string>
+#include <stdlib.h>
 
 // include GLEW to access OpenGL 3.3 functions
 #include <GL/glew.h>
@@ -28,7 +29,6 @@
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
 int WinX = 640, WinY = 480;
-
 unsigned int FrameCount = 0;
 
 VSShaderLib shader;
@@ -341,12 +341,12 @@ void renderScene(void) {
 		entity->move();
 		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 	}
-
+	
 	int i;
 	for (i = 0; i < 5; i++){
 		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 			orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
+			orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
 			orange[i]->createMesh();
 		}
 		orange[i]->setAceleration(globalOrangesAccelaration);
@@ -385,6 +385,8 @@ void init()
 
 int main(int argc, char **argv) {
 
+	
+
 	//  GLUT initialization
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
@@ -409,17 +411,19 @@ int main(int argc, char **argv) {
 	if (road == NULL)
 		road = new Road();
 
-
+	srand(time(NULL));
 	//Orange respawn
 	for (int i = 0; i < 5; i++){
-		if (orange[i] == NULL)
+		if (orange[i] == NULL){
 			//Spawns an orange between -100 and 100
-			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
+			orange[i] = new Orange(-100.0f + (rand() % 200), 3.0f, -100.0f + (rand() % 200));
+		}
 		//entities.push_back(orange[i]);
 	}
 
-	if (butter == NULL)
-		butter = new Butter((10 * rand()) % 20, 0.3f, (10 * rand()) % 20);
+	if (butter == NULL){
+		butter = new Butter(-100.0f + (rand() % 200), 0.3f, -100.0f + (rand() % 200));
+	}
 
 	if (dirLight == NULL)
 		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f);
