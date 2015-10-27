@@ -19,7 +19,6 @@
 #include "Entity.h"
 
 
-
 class Road : public Entity {
 private:
 	GLuint TextureArray[1];

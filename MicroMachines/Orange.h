@@ -4,8 +4,8 @@
 #include <math.h>
 #include <iostream>
 #include <sstream>
-
 #include <string>
+
 
 // include GLEW to access OpenGL 3.3 functions
 #include <GL/glew.h>
@@ -13,7 +13,6 @@
 // GLUT is the toolkit to interface with the OS
 #include <GL/freeglut.h>
 
-// Use Very Simple Libs
 // Use Very Simple Libs
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
@@ -25,6 +24,8 @@ class Orange : public Entity {
 private:
 	float position[3];
 	float aceleration = 0.0f;
+	GLuint TextureArray[1];
+
 public:
 
 	Orange();

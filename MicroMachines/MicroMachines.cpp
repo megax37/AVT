@@ -58,7 +58,7 @@ GLint pvm_uniformId;
 GLint vm_uniformId;
 GLint normal_uniformId;
 GLint lPos_uniformId;
-GLint tex_loc0,tex_loc1;
+GLint tex_loc0, tex_loc1, tex_loc2;
 GLint texMode_uniformId;
 
 // Mouse Tracking Variables
@@ -293,6 +293,7 @@ GLuint setupShaders() {
 	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
 	tex_loc1 = glGetUniformLocation(shader.getProgramIndex(), "texmap1");
+	tex_loc2 = glGetUniformLocation(shader.getProgramIndex(), "texmap2");
 
 	printf("InfoLog for Hello World Shader\n%s\n\n", shader.getAllInfoLogs().c_str());
 
@@ -414,6 +415,7 @@ int main(int argc, char **argv) {
 		if (orange[i] == NULL)
 			//Spawns an orange between -100 and 100
 			orange[i] = new Orange(-100.0f + rand() % 200, 3.0f, -100.0f + rand() % 200);
+		//entities.push_back(orange[i]);
 	}
 
 	if (butter == NULL)
