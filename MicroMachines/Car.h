@@ -19,6 +19,7 @@
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
 #include "Entity.h"
+#include "SpotLight.h"
 
 class Car : public Entity {
 private:
@@ -30,6 +31,8 @@ private:
 	float aceleration = 5.0;
 	float current_Aceleration = 0.0f;
 	bool front = true;
+	SpotLight* spotLight;
+	SpotLight* spotLight1;
 	//int frame = 0;
 	//int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
 
@@ -38,6 +41,8 @@ public:
 	//float current_rotation[3];
 
 	Car();
+	Car(SpotLight* spot, SpotLight* spot1);
+	Car(SpotLight* spot);
 
 	void createMesh();
 	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);

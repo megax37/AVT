@@ -16,7 +16,7 @@ struct Materials {
 	int texCount;
 };
 
-const int numberOfLights = 2;
+const int numberOfLights = 3;
 
 uniform struct Light {
 	vec4 l_pos;
@@ -24,7 +24,7 @@ uniform struct Light {
 	vec4 specular;
 	float constantAttenuation, linearAttenuation, quadraticAttenuation;
 	float spotCutoff, spotExponent;
-	vec3 spotDirection;
+	vec4 spotDirection;
 	bool isActive;
 } lights[numberOfLights];
 
@@ -79,7 +79,7 @@ void main() {
 
 				if(lights[i].spotCutoff < 90.0) // Spotlight?
 				{
-					vec3 sd = normalize(-lights[i].spotDirection);
+					vec3 sd = normalize(vec3(-lights[i].spotDirection));
 					float spotCosine = max(dot(sd, l), 0.0);
 					if(spotCosine >= cos(radians(lights[i].spotCutoff))) {
 						attenuation = attenuation * pow(spotCosine, lights[i].spotExponent);

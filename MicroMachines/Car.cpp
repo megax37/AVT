@@ -11,6 +11,14 @@ extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
 extern float mNormal3x3[9];
 
 Car::Car() : Entity(2) {}
+Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
+	spotLight = spot;
+	spotLight1 = spot1;
+}
+
+Car::Car(SpotLight* spot) : Entity(2) {
+	spotLight = spot;
+}
 
 void Car::createMesh() {
 
@@ -145,6 +153,12 @@ void Car::increasePosition(float dx, float dy, float dz) {
 	current_position[0] += dx;
 	current_position[1] += dy;
 	current_position[2] += dz;
+
+	//para o spotLight
+	float dzz = (float)(3.0f * cos(current_rotation[1] * (PI / 180.f)));
+	float dxx = (float)(3.0f * sin(current_rotation[1] * (PI / 180.f)));
+	spotLight->setPos(current_position[0], current_position[1] + 2.0f, current_position[2], dxx, dzz);
+	spotLight->setDir(current_position[0], current_position[1] + 0.8f, current_position[2]);
 }
 
 void Car::increaseRotation(float dx, float dy, float dz) {

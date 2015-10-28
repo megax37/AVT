@@ -26,6 +26,7 @@
 #include "Road.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
@@ -41,6 +42,7 @@ Orange *orange[5];
 Road *road;
 DirectionalLight *dirLight;
 PointLight *pointLight;
+SpotLight *spotLight;
 float globalOrangesAccelaration = 0.0f;
 
 std::vector<Entity*> entities;
@@ -421,8 +423,11 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(WinX, WinY);
 	WindowHandle = glutCreateWindow(CAPTION);
 
+	if (spotLight == NULL)
+		spotLight = new SpotLight(0.0f, 0.8f, 3.0f, 1.0f, 2);
+
 	if (car == NULL)
-		car = new Car();
+		car = new Car(spotLight);
 
 	if (camera == NULL)
 		camera = new Camera(car);
@@ -459,6 +464,7 @@ int main(int argc, char **argv) {
 	entities.push_back(road);
 	lights.push_back(pointLight);
 	lights.push_back(dirLight);
+	lights.push_back(spotLight);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
