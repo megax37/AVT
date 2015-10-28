@@ -1,7 +1,7 @@
 #version 330
 
 uniform sampler2D texmap0;
-//uniform sampler2D texmap1;
+uniform sampler2D texmap1;
 
 uniform int texMode;
 
@@ -16,7 +16,9 @@ struct Materials {
 	int texCount;
 };
 
-struct Light {
+const int numberOfLights = 2;
+
+uniform struct Light {
 	vec4 l_pos;
 	vec4 diffuse;
 	vec4 specular;
@@ -24,12 +26,12 @@ struct Light {
 	float spotCutoff, spotExponent;
 	vec3 spotDirection;
 	bool isActive;
-};
+} lights[numberOfLights];
 
 uniform Materials mat;
 
-const int numberOfLights = 2;
-uniform Light lights[numberOfLights];
+
+//uniform Light lights[numberOfLights];
 //uniform Light light0;
 
 in Data {
@@ -106,6 +108,7 @@ void main() {
 	}
 
 	vec4 texel;
+	vec4 texel1;
 
 	if(texMode == 0) // No textures
 	{
@@ -118,9 +121,14 @@ void main() {
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * mat.diffuse * texel + totalSpecular * mat.specular, mat.ambient * texel);
 	}
-	else // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
+	else if (texMode == 2) // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * texel + totalSpecular * mat.specular, 0.1*texel);
+	}
+	else {
+		texel = texture(texmap0, DataIn.tex_coord);
+		texel1 = texture(texmap1, DataIn.tex_coord);
+		colorOut = max(totalDiffuse * texel * texel1 + totalSpecular * mat.specular, 0.1 * texel * texel1);
 	}
 }

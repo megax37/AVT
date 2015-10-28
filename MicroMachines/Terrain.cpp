@@ -24,7 +24,7 @@ void Terrain::createMesh() {
 	float spec[] = { 0.4f, 0.270f, 0.075f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
-	int texcount = 1;
+	int texcount = 2;
 
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
@@ -34,6 +34,7 @@ void Terrain::createMesh() {
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
+	mesh[objId].texUnits[1] = TextureArray[1];
 	mesh[objId].position[0] = -100.0f;
 	mesh[objId].position[1] = -5.0f;
 	mesh[objId].position[2] = -100.0f;
@@ -48,6 +49,7 @@ void Terrain::createMesh() {
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
+	mesh[objId].texUnits[1] = TextureArray[1];
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = -55.0f;
 	mesh[objId].position[2] = 0.0f;
@@ -57,6 +59,7 @@ void Terrain::createMesh() {
 	float amb1[] = { 0.4f, 0.35f, 0.075f, 1.0f };
 	float diff1[] = { 0.5f, 0.4f, 0.075f, 1.0f };
 	float spec1[] = { 0.4f, 0.35f, 0.075f, 1.0f };
+	int texcount1 = 1;
 
 	objId = 2;
 	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
@@ -64,7 +67,7 @@ void Terrain::createMesh() {
 	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
-	mesh[objId].mat.texCount = texcount;
+	mesh[objId].mat.texCount = texcount1;
 	mesh[objId].texUnits[0] = TextureArray[1];
 	mesh[objId].position[0] = -150.0f;
 	mesh[objId].position[1] = -56.0f;
@@ -83,7 +86,14 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
 			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-			glUniform1i(loc, 2);
+			if (mesh[i].mat.texCount == 2) {
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[1]);
+				glUniform1i(loc, 3);
+			}
+			else {
+				glUniform1i(loc, 2);
+			}
 		}
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
 			// send the material

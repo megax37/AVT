@@ -20,3 +20,11 @@ LightSource::LightSource(int meshCapacity, int lID) {
 	meshLength = meshCapacity;
 	lightID = lID;
 }
+
+const char *LightSource::getLightUniform(VSShaderLib &shader, const char *name) {
+	std::ostringstream ss;
+	ss << "lights[" << lightID << "]." << name;
+	std::string uniformName = ss.str();
+
+	return uniformName.c_str();
+}

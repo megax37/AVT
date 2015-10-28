@@ -49,8 +49,8 @@ void PointLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifo
 
 	GLuint loc;
 	float res[4];
-	std::ostringstream ss;
-	std::string uniformName;
+	//std::ostringstream ss;
+	//std::string uniformName;
 	multMatrixPoint(VIEW, light->position, res);   //lightPos definido em World Coord so is converted to eye space
 
 	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].l_pos");
@@ -70,51 +70,61 @@ void PointLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifo
 	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].isActive");
 	glUniform1i(loc, isActive);
 
-	ss << "light" << lightID << ".l_pos";
+	/*ss << "lights[" << lightID << "].l_pos";
 	uniformName = ss.str();
 	
-	/*if (b) {
-		printf("%s \n", uniformName.data());
+	if (b) {
+		printf("%s \n", uniformName.c_str());
 		b = false;
-	}
+	}*/
 	
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	/*loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "l_pos"));
 	glUniform4fv(loc, 1, res);
-	
-	ss << "light" << lightID << ".diffuse";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), res);
+	//ss << "lights[" << lightID << "].diffuse";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "diffuse"));
 	glUniform4fv(loc, 1, light->diffuse);
-	
-	ss << "light" << lightID << ".specular";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), light->diffuse);
+	//ss << "lights[" << lightID << "].specular";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "specular"));
 	glUniform4fv(loc, 1, light->specular);
-	
-	ss << "light" << lightID << ".constantAttenuation";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), light->specular);
+	//ss << "lights[" << lightID << "].constantAttenuation";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "constantAttenuation"));
 	glUniform1f(loc, light->constantAttenuation);
-	
-	ss << "light" << lightID << ".linearAttenuation";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), light->constantAttenuation);
+	//ss << "lights[" << lightID << "].linearAttenuation";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "linearAttenuation"));
 	glUniform1f(loc, light->linearAttenuation);
-	
-	ss << "light" << lightID << ".quadraticAttenuation";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), light->linearAttenuation);
+	//ss << "lights[" << lightID << "].quadraticAttenuation";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "quadraticAttenuation"));
 	glUniform1f(loc, light->quadraticAttenuation);
-	
-	ss << "light" << lightID << ".spotCutoff";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
+	//shader.setUniform(uniformName.c_str(), light->quadraticAttenuation);
+	//ss << "lights[" << lightID << "].spotCutoff";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "spotCutoff"));
 	glUniform1f(loc, light->spotCutoff);
-	
-	ss << "light" << lightID << ".isActive";
-	uniformName = ss.str();
-	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName.c_str());
-	glUniform1i(loc, isActive);*/
+	//shader.setUniform(uniformName.c_str(), light->spotCutoff);
+	//ss << "lights[" << lightID << "].isActive";
+	//uniformName = ss.str();
+	loc = glGetUniformLocation(shader.getProgramIndex(), getLightUniform(shader, "isActive"));
+	glUniform1i(loc, isActive);
+	//shader.setUniform(uniformName.c_str(), isActive);*/
+
+	/*shader.setUniform(getLightUniform(shader, "l_pos"), res);
+	shader.setUniform(getLightUniform(shader, "diffuse"), light->diffuse);
+	shader.setUniform(getLightUniform(shader, "specular"), light->specular);
+	shader.setUniform(getLightUniform(shader, "constantAttenuation"), light->constantAttenuation);
+	shader.setUniform(getLightUniform(shader, "linearAttenuation"), light->linearAttenuation);
+	shader.setUniform(getLightUniform(shader, "quadraticAttenuation"), light->quadraticAttenuation);
+	shader.setUniform(getLightUniform(shader, "spotCutoff"), light->spotCutoff);
+	shader.setUniform(getLightUniform(shader, "isActive"), isActive);*/
 
 }
 

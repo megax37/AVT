@@ -55,5 +55,7 @@ public:
 		isActive = active;
 	}
 
+	const char *getLightUniform(VSShaderLib &shader, const char *uniformName);
+
 };
 #endif
