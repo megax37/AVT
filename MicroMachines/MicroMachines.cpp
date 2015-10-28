@@ -119,11 +119,11 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 'c':
 		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->getAngleAroundPlayer(), camera->getPitch(), camera->getR());
 		break;
-	case 'm': 
-		glEnable(GL_MULTISAMPLE); 
+	case 'm':
+		glEnable(GL_MULTISAMPLE);
 		break;
-	case 'n': 
-		glDisable(GL_MULTISAMPLE); 
+	case 'n':
+		glDisable(GL_MULTISAMPLE);
 		break;
 	case 'C':
 		if (pointLight->getActive()) {
@@ -139,6 +139,14 @@ void processKeys(unsigned char key, int xx, int yy)
 		}
 		else {
 			dirLight->setActive(true);
+		}
+		break;
+	case 'H':
+		if (spotLight->getActive()) {
+			spotLight->setActive(false);
+		}
+		else {
+			spotLight->setActive(true);
 		}
 		break;
 	}
