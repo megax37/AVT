@@ -37,7 +37,7 @@ void Road::createMesh() {
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.0f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].vaoElements = 4;
+	mesh[objId].vaoElements = 14;
 	createCube(mesh, objId);
 
 }
@@ -72,17 +72,54 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 					translate(MODEL, 0.0f, 0.0f, -80.0f);
 				}
 				else if (j == 1) {
-					translate(MODEL, 50.0f, 0.0f, -80.0f);
+					translate(MODEL, 50.0f, 0.01f, -80.0f);
 					rotate(MODEL, -45.0f, 0.0f, 1.0f,0.0f);
 					
 				}
 				else if (j == 2) {
 					translate(MODEL, 85.0f, 0.0f, -45.0f);
-					rotate(MODEL, -90.0f, 0.0f, 1.0f, 0.0f);
+					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
 				}
 				else if (j == 3) {
-					translate(MODEL, 85.0f, 0.0f, -45.0f);
-					rotate(MODEL, -90.0f, 0.0f, 1.0f, 0.0f);
+					translate(MODEL, 76.0f, 0.01f, 0.0f);
+					rotate(MODEL, -80.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 4) {
+					translate(MODEL, 85.0f, 0.0f, 45.0f);
+					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 5) {
+					translate(MODEL, 28.0f, 0.01f, 85.0f);
+				}
+				else if (j == 6) {
+					translate(MODEL, -20.0f, 0.0f, 85.0f);
+				}
+				else if (j == 7) {
+					translate(MODEL, -31.0f, 0.01f, 49.0f);
+					rotate(MODEL, -60.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 8) {
+					translate(MODEL, -43.0f, 0.0f, 56.0f);
+					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 9) {
+					translate(MODEL, -12.0f, 0.01f, 32.0f);
+					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 10) {
+					translate(MODEL, -49.0f, 0.0f, -15.0f);
+					rotate(MODEL, 20.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 11) {
+					translate(MODEL, -45.0f, 0.01f, -2.0f);
+					rotate(MODEL, 134.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 12) {
+					translate(MODEL, -86.0f, 0.01f, -44.0f);
+					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
+				}
+				else if (j == 13) {
+					translate(MODEL, -50.0f, 0.0f, -80.0f);
 				}
 				scale(MODEL, 50.0f, 0.2f, 15.0f);
 			}
