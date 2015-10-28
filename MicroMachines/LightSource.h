@@ -26,7 +26,7 @@ struct Light{
 	float constantAttenuation, linearAttenuation, quadraticAttenuation;
 	float spotCutoff;
 	float spotExponent;
-	float spotDirection[3];
+	float spotDirection[4];
 };
 
 class LightSource {
