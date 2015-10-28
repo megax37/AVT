@@ -45,6 +45,8 @@ PointLight *pointLight;
 SpotLight *spotLight;
 float globalOrangesAccelaration = 0.0f;
 
+bool paused = false;
+
 std::vector<Entity*> entities;
 std::vector<LightSource*> lights;
 
@@ -124,6 +126,9 @@ void processKeys(unsigned char key, int xx, int yy)
 		break;
 	case 'n':
 		glDisable(GL_MULTISAMPLE);
+		break;
+	case 'p':
+		paused = !paused;
 		break;
 	case 'C':
 		if (pointLight->getActive()) {
@@ -348,46 +353,48 @@ void changeSize(int w, int h) {
 
 void renderScene(void) {
 
-	//GLint loc;
-	FrameCount++;
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1, 1, 1, 1);
-	// load identity matrices
-	loadIdentity(VIEW);
-	loadIdentity(MODEL);
-	// set the camera using a function similar to gluLookAt
-	camera->lookat();
+	if (!paused){
+		//GLint loc;
+		FrameCount++;
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(1, 1, 1, 1);
+		// load identity matrices
+		loadIdentity(VIEW);
+		loadIdentity(MODEL);
+		// set the camera using a function similar to gluLookAt
+		camera->lookat();
 
-	glUseProgram(shader.getProgramIndex());
+		glUseProgram(shader.getProgramIndex());
 
-	glUniform1i(texMode_uniformId, 0);
-	glUniform1i(tex_loc0, 0);
-	glUniform1i(tex_loc1, 1);
+		glUniform1i(texMode_uniformId, 0);
+		glUniform1i(tex_loc0, 0);
+		glUniform1i(tex_loc1, 1);
 
-	for each(LightSource* light in lights) {
-		light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	}
-
-	activeKeys();
-	for each(Entity* entity in entities) {
-		entity->move();
-		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	}
-	
-	int i;
-	for (i = 0; i < 5; i++){
-		if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
-			orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-			orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
-			orange[i]->createMesh();
+		for each(LightSource* light in lights) {
+			light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
 		}
-		orange[i]->setAceleration(globalOrangesAccelaration);
-		orange[i]->move();
-		orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
-	}
-	globalOrangesAccelaration += 0.0002f;
 
-	glutSwapBuffers();
+		activeKeys();
+		for each(Entity* entity in entities) {
+			entity->move();
+			entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+		}
+
+		int i;
+		for (i = 0; i < 5; i++){
+			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
+				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
+				orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
+				orange[i]->createMesh();
+			}
+			orange[i]->setAceleration(globalOrangesAccelaration);
+			orange[i]->move();
+			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+		}
+		globalOrangesAccelaration += 0.0002f;
+
+		glutSwapBuffers();
+	}
 }
 
 void init()
@@ -457,7 +464,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (butter == NULL){
-		butter = new Butter(-100.0f + (rand() % 200), 0.3f, -100.0f + (rand() % 200));
+		butter = new Butter(-80.0f + (rand() % 160), 0.3f, -80.0f + (rand() % 160));
 	}
 
 	if (pointLight == NULL)
@@ -474,7 +481,9 @@ int main(int argc, char **argv) {
 	lights.push_back(dirLight);
 	lights.push_back(spotLight);
 	//  Callback Registration
-	glutDisplayFunc(renderScene);
+		glutDisplayFunc(renderScene);
+		glutTimerFunc(0, timer, 0);
+		glutTimerFunc(0, refresh, 0);
 	glutReshapeFunc(changeSize);
 	//glutIdleFunc(renderScene);
 
@@ -484,8 +493,7 @@ int main(int argc, char **argv) {
 	glutMouseFunc(processMouseButtons);
 	glutMotionFunc(processMouseMotion);
 	glutMouseWheelFunc(mouseWheel);
-	glutTimerFunc(0, timer, 0);
-	glutTimerFunc(0, refresh, 0);
+	
 
 
 	//	return from main loop

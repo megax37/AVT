@@ -19,9 +19,9 @@ Road::Road() : Entity(1) {
 
 void Road::createMesh() {
 
-	float amb[] = { 0.2f, 0.15f, 0.1f, 1.0f };
-	float diff[] = { 0.8f, 0.6f, 0.4f, 1.0f };
-	float spec[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float amb[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float diff[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float spec[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
 	int texcount = 1;
@@ -115,11 +115,11 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 					rotate(MODEL, 134.0f, 0.0f, 1.0f, 0.0f);
 				}
 				else if (j == 12) {
-					translate(MODEL, -86.0f, 0.01f, -44.0f);
+					translate(MODEL, -86.0f, 0.0f, -44.0f);
 					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
 				}
 				else if (j == 13) {
-					translate(MODEL, -50.0f, 0.0f, -80.0f);
+					translate(MODEL, -50.0f, 0.01f, -80.0f);
 				}
 				scale(MODEL, 50.0f, 0.2f, 15.0f);
 			}
