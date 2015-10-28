@@ -154,11 +154,16 @@ void Car::increasePosition(float dx, float dy, float dz) {
 	current_position[1] += dy;
 	current_position[2] += dz;
 
-	//para o spotLight
+	//para o spotLight7
 	float dzz = (float)(3.0f * cos(current_rotation[1] * (PI / 180.f)));
 	float dxx = (float)(3.0f * sin(current_rotation[1] * (PI / 180.f)));
 	spotLight->setPos(current_position[0], current_position[1] + 2.0f, current_position[2], dxx, dzz);
 	spotLight->setDir(current_position[0], current_position[1] + 0.8f, current_position[2]);
+	// spotlight8
+	float dzz2 = (float)(((3.0f * cos(current_rotation[1] * (PI / 180.f))) - (2.0f * sin(current_rotation[1] * (PI / 180.f)))));
+	float dxx2 = (float)(((3.0f * sin(current_rotation[1] * (PI / 180.f))) + (2.0f * cos(current_rotation[1] * (PI / 180.f)))));
+	spotLight1->setPos(current_position[0], current_position[1] + 2.0f, current_position[2], dxx2, dzz2);
+	spotLight1->setDir(current_position[0], current_position[1] + 0.8f, current_position[2]);
 }
 
 void Car::increaseRotation(float dx, float dy, float dz) {

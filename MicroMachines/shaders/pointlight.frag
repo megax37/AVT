@@ -16,7 +16,7 @@ struct Materials {
 	int texCount;
 };
 
-const int numberOfLights = 3;
+const int numberOfLights = 9;
 
 uniform struct Light {
 	vec4 l_pos;

@@ -40,9 +40,16 @@ Terrain *terrain;
 Butter *butter;
 Orange *orange[5];
 Road *road;
-DirectionalLight *dirLight;
-PointLight *pointLight;
-SpotLight *spotLight;
+DirectionalLight *dirLight0;
+PointLight *pointLight1;
+PointLight *pointLight2;
+PointLight *pointLight3;
+PointLight *pointLight4;
+PointLight *pointLight5;
+PointLight *pointLight6;
+SpotLight *spotLight7;
+SpotLight *spotLight8;
+
 float globalOrangesAccelaration = 0.0f;
 
 bool paused = false;
@@ -130,28 +137,40 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 'p':
 		paused = !paused;
 		break;
-	case 'C':
-		if (pointLight->getActive()) {
-			pointLight->setActive(false);
+	case 'M':
+		if (dirLight0->getActive()) {
+			dirLight0->setActive(false);
 		}
 		else {
-			pointLight->setActive(true);
+			dirLight0->setActive(true);
 		}
 		break;
-	case 'M':
-		if (dirLight->getActive()) {
-			dirLight->setActive(false);
+	case 'C':
+		if (pointLight1->getActive()) {
+			pointLight1->setActive(false);
+			pointLight2->setActive(false);
+			pointLight3->setActive(false);
+			pointLight4->setActive(false);
+			pointLight5->setActive(false);
+			pointLight6->setActive(false);
 		}
 		else {
-			dirLight->setActive(true);
+			pointLight1->setActive(true);
+			pointLight2->setActive(true);
+			pointLight3->setActive(true);
+			pointLight4->setActive(true);
+			pointLight5->setActive(true);
+			pointLight6->setActive(true);
 		}
 		break;
 	case 'H':
-		if (spotLight->getActive()) {
-			spotLight->setActive(false);
+		if (spotLight7->getActive()) {
+			spotLight7->setActive(false);
+			spotLight8->setActive(false);
 		}
 		else {
-			spotLight->setActive(true);
+			spotLight7->setActive(true);
+			spotLight8->setActive(true);
 		}
 		break;
 	}
@@ -439,15 +458,6 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(WinX, WinY);
 	WindowHandle = glutCreateWindow(CAPTION);
 
-	if (spotLight == NULL)
-		spotLight = new SpotLight(0.0f, 0.8f, 3.0f, 1.0f, 2);
-
-	if (car == NULL)
-		car = new Car(spotLight);
-
-	if (camera == NULL)
-		camera = new Camera(car);
-
 	if (terrain == NULL)
 		terrain = new Terrain();
 
@@ -468,19 +478,41 @@ int main(int argc, char **argv) {
 		butter = new Butter(-80.0f + (rand() % 160), 0.3f, -80.0f + (rand() % 160));
 	}
 
-	if (pointLight == NULL)
-		pointLight = new PointLight(0.0f, 5.0f, 0.0f, 1.0f, 0);
+	if (dirLight0 == NULL)
+		dirLight0 = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f, 0);
 
-	if (dirLight == NULL)
-		dirLight = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f, 1);
+	if (pointLight1 == NULL) {
+		pointLight1 = new PointLight(80.0f, 5.0f, -80.0f, 1.0f, 1);
+		pointLight2 = new PointLight(-80.0f, 5.0f, -80.0f, 1.0f, 2);
+		pointLight3 = new PointLight(40.0f, 5.0f, 0.0f, 1.0f, 3);
+		pointLight4 = new PointLight(-40.0f, 5.0f, 0.0f, 1.0f, 4);
+		pointLight5 = new PointLight(80.0f, 5.0f, 80.0f, 1.0f, 5);
+		pointLight6 = new PointLight(-80.0f, 5.0f, 80.0f, 1.0f, 6);
+	}
+	if (spotLight7 == NULL) {
+		spotLight7 = new SpotLight(0.0f, 0.8f, 3.0f, 1.0f, 7);
+		spotLight8 = new SpotLight(2.0f, 0.8f, 3.0f, 1.0f, 8);
+	}
+
+	if (car == NULL)
+		car = new Car(spotLight7, spotLight8);
+
+	if (camera == NULL)
+		camera = new Camera(car);
 
 	entities.push_back(car);
 	entities.push_back(terrain);
 	entities.push_back(butter);
 	entities.push_back(road);
-	lights.push_back(pointLight);
-	lights.push_back(dirLight);
-	lights.push_back(spotLight);
+	lights.push_back(dirLight0);
+	lights.push_back(pointLight1);
+	lights.push_back(pointLight2);
+	lights.push_back(pointLight3);
+	lights.push_back(pointLight4);
+	lights.push_back(pointLight5);
+	lights.push_back(pointLight6);
+	lights.push_back(spotLight7);
+	lights.push_back(spotLight8);
 	//  Callback Registration
 		glutDisplayFunc(renderScene);
 		glutTimerFunc(0, timer, 0);

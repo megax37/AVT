@@ -49,21 +49,21 @@ void DirectionalLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm
 	float res[4];
 	multMatrixPoint(VIEW, light->position, res);   //lightPos definido em World Coord so is converted to eye space
 
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].l_pos");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].l_pos");
 	glUniform4fv(loc, 1, res);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].diffuse");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].diffuse");
 	glUniform4fv(loc, 1, light->diffuse);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].specular");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].specular");
 	glUniform4fv(loc, 1, light->specular);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].constantAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].constantAttenuation");
 	glUniform1f(loc, light->constantAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].linearAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].linearAttenuation");
 	glUniform1f(loc, light->linearAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].quadraticAttenuation");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].quadraticAttenuation");
 	glUniform1f(loc, light->quadraticAttenuation);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].spotCutoff");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].spotCutoff");
 	glUniform1f(loc, light->spotCutoff);
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[1].isActive");
+	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].isActive");
 	glUniform1i(loc, isActive);
 
 	for (int i = 0; i < meshLength; ++i) {
