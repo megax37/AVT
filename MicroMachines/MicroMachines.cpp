@@ -384,7 +384,8 @@ void renderScene(void) {
 		for (i = 0; i < 5; i++){
 			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-				orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
+				orange[i]->current_position[2] -= 190;
+				//orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
 				orange[i]->createMesh();
 			}
 			orange[i]->setAceleration(globalOrangesAccelaration);
