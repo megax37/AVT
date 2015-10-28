@@ -21,7 +21,7 @@
 
 class Road : public Entity {
 private:
-	GLuint TextureArray[1];
+	GLuint TextureArray[2];
 
 public:
 	Road();
