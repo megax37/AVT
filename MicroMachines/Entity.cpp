@@ -2,13 +2,6 @@
 #include <stdlib.h>
 
 #include "Entity.h"
-#define PI 3.14159265
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 Entity::Entity() {
 	current_position[0] = 0.0f;

@@ -15,13 +15,11 @@ void Camera::chooseView(unsigned char key) {
 		orthoView = true;
 		perspectiveView = false;
 		thirdPersonView = false;
-		//car->setFront(true);
 		break;
 	case '2':
 		orthoView = false;
 		perspectiveView = true;
 		thirdPersonView = false;
-		//car->setFront(true);
 		break;
 	case '3':
 		orthoView = false;
@@ -62,7 +60,7 @@ void Camera::lookat() {
 	}
 	else if (thirdPersonView) {
 		pitch = 25.0f;
-		angleAroundPlayer = -5.0;
+		//angleAroundPlayer = -5.0;
 		move();
 		lookAt(camX, camY, camZ, car->current_position[0], 0, car->current_position[2], 0, 1, 0);
 	}

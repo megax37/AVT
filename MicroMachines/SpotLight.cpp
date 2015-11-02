@@ -2,102 +2,31 @@
 #include <stdlib.h>
 
 #include "SpotLight.h"
-#define PI 3.14159265
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 SpotLight::SpotLight() {}
 
-SpotLight::SpotLight(float x, float y, float z, float w, int lightID) : LightSource(1, lightID) {
-	//car = carr;
+SpotLight::SpotLight(float x, float y, float z, float w, int lightID) : LightSource(lightID) {
 	light->position[0] = x;
 	light->position[1] = y;
 	light->position[2] = z;
 	light->position[3] = w;
-	light->constantAttenuation = 0.005f;
-	light->linearAttenuation = 0.004f;
+	light->constantAttenuation = 0.1f;
+	light->linearAttenuation = 0.003f;
 	light->quadraticAttenuation = 0.00001f;
-	light->spotDirection[0] = 0.0;
-	light->spotDirection[1] = -y;
-	light->spotDirection[2] = 0.0;
-	light->spotDirection[3] = 1.0f;
+	light->spotDirection[0] = 0.0f;
+	light->spotDirection[1] = 0.0f;
+	light->spotDirection[2] = 0.0f;
+	light->spotDirection[3] = 0.0f;
 	light->spotCutoff = 40.0f;
-	light->spotExponent = 9.0f;
-
+	light->spotExponent = 6.0f;
 }
 
 void SpotLight::createMesh() {
-	//float amb[] = { 0.0f, 0.0f, 0.0f, 1.0f }; // luz ambiente do sol
-	//float diff[] = { 0.9f, 0.9f, 0.5f, 1.0f }; //luz amarela 
-	float l_diff[] = { 0.9f, 0.9f, 0.5f, 1.0f }; //luz amarela
-	float l_spec[] = { 0.8f, 0.8f, 0.4f, 1.0f };
-	//float emissive[] = { 0.9f, 0.9f, 0.5f, 1.0f };
-	//float shininess = 120.0f;
-	//int texcount = 0;
+	float l_diff[] = { 0.9f, 0.9f, 0.7f, 1.0f };
+	float l_spec[] = { 0.7f, 0.7f, 0.4f, 1.0f };
 
-	//objId = 0;
-	//memcpy(light->lightColor, amb, 4 * sizeof(float));
 	memcpy(light->diffuse, l_diff, 4 * sizeof(float));
 	memcpy(light->specular, l_spec, 4 * sizeof(float));
-	//memcpy(light->emissive, emissive, 4 * sizeof(float));
-	//light->shininess = shininess;
-	//light->texCount = texcount;
-	//mesh[objId].position[0] = position[0];
-	//mesh[objId].position[1] = position[1];
-	//mesh[objId].position[2] = position[2];
-	//createSphere(3.0f, 20, mesh, objId);
-
-	/*objId = 1;
-	//memcpy(light->lightColor, amb, 4 * sizeof(float));
-	memcpy(light[1].lightColor, diff, 4 * sizeof(float));
-	//memcpy(light->specular, spec, 4 * sizeof(float));
-	//memcpy(light->emissive, emissive, 4 * sizeof(float));
-	//light->shininess = shininess;
-	//light->texCount = texcount;
-	light[1].position[0] = position[0] - 200;
-	light[1].position[1] = position[1];
-	light[1].position[2] = position[2];
-	light[1].position[3] = position[3];
-	//mesh[objId].position[0] = position[0];
-	//mesh[objId].position[1] = position[1];
-	//mesh[objId].position[2] = position[2];
-	//createSphere(3.0f, 20, mesh, objId);
-
-	objId = 2;
-	//memcpy(light->lightColor, amb, 4 * sizeof(float));
-	memcpy(light[2].lightColor, diff, 4 * sizeof(float));
-	//memcpy(light->specular, spec, 4 * sizeof(float));
-	//memcpy(light->emissive, emissive, 4 * sizeof(float));
-	//light->shininess = shininess;
-	//light->texCount = texcount;
-	light[2].position[0] = position[0] - 200;
-	light[2].position[1] = position[1];
-	light[2].position[2] = position[2] - 200;
-	light[2].position[3] = position[3];
-	//mesh[objId].position[0] = position[0];
-	//mesh[objId].position[1] = position[1];
-	//mesh[objId].position[2] = position[2];
-	//createSphere(3.0f, 20, mesh, objId);
-
-	objId = 3;
-	//memcpy(light->lightColor, amb, 4 * sizeof(float));
-	memcpy(light[3].lightColor, diff, 4 * sizeof(float));
-	//memcpy(light->specular, spec, 4 * sizeof(float));
-	//memcpy(light->emissive, emissive, 4 * sizeof(float));
-	//light->shininess = shininess;
-	//light->texCount = texcount;
-	light[3].position[0] = position[0];
-	light[3].position[1] = position[1];
-	light[3].position[2] = position[2] - 200;
-	light[3].position[3] = position[3];
-	//mesh[objId].position[0] = position[0];
-	//mesh[objId].position[1] = position[1];
-	//mesh[objId].position[2] = position[2];
-	//createSphere(3.0f, 20, mesh, objId);*/
 }
 
 void SpotLight::setPos(float x, float y, float z, float dxx, float dzz) {
@@ -105,29 +34,21 @@ void SpotLight::setPos(float x, float y, float z, float dxx, float dzz) {
 	light->position[1] = y;
 	light->position[2] = z + dzz;
 	light->position[3] = 1.0f;
-	//colocar na frente do carro
 }
 
 void SpotLight::setDir(float dirX, float dirY, float dirZ) {
-	//light->coneDirection[0] = dirX;
-	//light->coneDirection[1] = dirY;
-	//light->coneDirection[2] = dirZ;
-	//light->coneDirection[3] = 1.0f;
-
 	light->spotDirection[0] = dirX;
 	light->spotDirection[1] = dirY;
 	light->spotDirection[2] = dirZ;
-	light->spotDirection[3] = 1.0f;
 }
 
-void SpotLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void SpotLight::draw(VSShaderLib &shader) {
 
 	GLuint loc;
 	float res[4];
 	float res1[4];
-	std::ostringstream ss;
-	std::string uniformName;
 	multMatrixPoint(VIEW, light->position, res);   //lightPos definido em World Coord so is converted to eye space
+	multMatrixPoint(VIEW, light->spotDirection, res1);
 
 	if (lightID == 7) {
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[7].l_pos");
@@ -142,7 +63,6 @@ void SpotLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 		glUniform1f(loc, light->linearAttenuation);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[7].quadraticAttenuation");
 		glUniform1f(loc, light->quadraticAttenuation);
-		multMatrixPoint(VIEW, light->spotDirection, res1);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[7].spotDirection");
 		glUniform4fv(loc, 1, res1);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[7].spotExponent");
@@ -165,7 +85,6 @@ void SpotLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 		glUniform1f(loc, light->linearAttenuation);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[8].quadraticAttenuation");
 		glUniform1f(loc, light->quadraticAttenuation);
-		multMatrixPoint(VIEW, light->spotDirection, res1);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[8].spotDirection");
 		glUniform4fv(loc, 1, res1);
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[8].spotExponent");

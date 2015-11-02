@@ -2,15 +2,9 @@
 #include <stdlib.h>
 
 #include "Car.h"
-#define PI 3.14159265
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 Car::Car() : Entity(2) {}
+
 Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
 	spotLight = spot;
 	spotLight1 = spot1;
@@ -71,7 +65,7 @@ void Car::createMesh() {
 	createTorus(0.20f, 0.80f, 20, 20, mesh, objId);
 }
 
-void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
@@ -88,50 +82,21 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 				loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
 				glUniform1f(loc, mesh[i].mat.shininess);
 				pushMatrix(MODEL);
-				if (!mesh[i].isRotate) {
-					translate(MODEL, (mesh[i].position[0] + current_position[0]), (mesh[i].position[1] + current_position[1]), (mesh[i].position[2] + current_position[2]));
+				if (i == 0) {
+					translate(MODEL, current_position[0], mesh[i].position[1] + current_position[1], current_position[2]);
 					rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
-					scale(MODEL, 2.0, 1.0f, 3.0f);
-					//translate(MODEL, -1.0, -1.3, -1.5); 
-					//rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
+					scale(MODEL, 2.0f, 1.0f, 3.0f);
 				}
-				else {
-					if (i == 1 && j == 0 && k == 0) { // primeira roda
-						translate(MODEL, (mesh[i].position[0] + current_position[0]) + k*2.0f, mesh[i].position[1] + current_position[1], (mesh[i].position[2] + current_position[2] + j*3.0f));
-						rotate(MODEL, mesh[i].rotation[0], mesh[i].rotation[1], mesh[i].rotation[2], mesh[i].rotation[3]);
-						rotate(MODEL, current_rotation[1], 1.0f, 0.0f, 0.0f);
-					}
-
-					if (i == 1 && j == 0 && k == 1) { //segunda roda
-						float dz = (float)(-2.0f * sin(current_rotation[1] * (PI / 180.f)));
-						float dy = (float)(2.0f * cos(current_rotation[1] * (PI / 180.f)));
-						translate(MODEL, (mesh[i].position[0] + current_position[0]) + k*2.0f, mesh[i].position[1] + current_position[1], (mesh[i].position[2] + current_position[2] + j*3.0f));
-						rotate(MODEL, -mesh[i].rotation[0], mesh[i].rotation[1], mesh[i].rotation[2], mesh[i].rotation[3]);
-						translate(MODEL, 0, dy - 2.0f, dz);
-						rotate(MODEL, -current_rotation[1], 1.0f, 0.0f, 0.0f);
-					}
-
-					if (i == 1 && j == 1 && k == 0) { //terceira roda
-						float dz = (float)(3.0f * cos(current_rotation[1] * (PI / 180.f)));
-						float dy = (float)(-3.0f * sin(current_rotation[1] * (PI / 180.f)));
-						translate(MODEL, (mesh[i].position[0] + current_position[0]) + k*2.0f, mesh[i].position[1] + current_position[1], (mesh[i].position[2] + current_position[2] + j*3.0f));
-						rotate(MODEL, mesh[i].rotation[0], mesh[i].rotation[1], mesh[i].rotation[2], mesh[i].rotation[3]);
-						translate(MODEL, 0, dy, dz - 3.0f);
-						rotate(MODEL, current_rotation[1], 1.0f, 0.0f, 0.0f);
-					}
-
-
-					if (i == 1 && j == 1 && k == 1) { //quarta roda
-						float dz = (float)(((3.0f * cos(current_rotation[1] * (PI / 180.f))) - (2.0f * sin(current_rotation[1] * (PI / 180.f)))));
-						float dy = (float)(((3.0f * sin(current_rotation[1] * (PI / 180.f))) + (2.0f * cos(current_rotation[1] * (PI / 180.f)))));
-						translate(MODEL, (mesh[i].position[0] + current_position[0]) + k*2.0f, mesh[i].position[1] + current_position[1], (mesh[i].position[2] + current_position[2] + j*3.0f));
-						rotate(MODEL, -mesh[i].rotation[0], mesh[i].rotation[1], mesh[i].rotation[2], mesh[i].rotation[3]);
-						translate(MODEL, 0, dy - 2.0f, dz - 3.0f);
-						rotate(MODEL, -current_rotation[1], 1.0f, 0.0f, 0.0f);
+				else if(i == 1) 
+				{
+					translate(MODEL, current_position[0], current_position[1], current_position[2]);
+					rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
+					translate(MODEL, -1.2f + j*2.4f, mesh[i].position[1], -1.35f + k*2.7f);
+					rotate(MODEL, 90.0f, 0.0f, 0.0f, 1.0f);
+					if (k == 0) {
+						scale(MODEL, 1.0f, 1.2f, 1.0f);
 					}
 				}
-
-				//rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
 				// send matrices to OGL
 				computeDerivedMatrix(PROJ_VIEW_MODEL);
 				glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
@@ -154,16 +119,20 @@ void Car::increasePosition(float dx, float dy, float dz) {
 	current_position[1] += dy;
 	current_position[2] += dz;
 
-	//para o spotLight7
-	float dzz = (float)(3.0f * cos(current_rotation[1] * (PI / 180.f)));
-	float dxx = (float)(3.0f * sin(current_rotation[1] * (PI / 180.f)));
-	spotLight->setPos(current_position[0], current_position[1] + 2.0f, current_position[2], dxx, dzz);
-	spotLight->setDir(current_position[0], current_position[1] + 0.8f, current_position[2]);
+	float spotdirX = (float)(sin(current_rotation[1] * (PI / 180.f)));
+	float spotdirZ = (float)(cos(current_rotation[1] * (PI / 180.f)));
+
+	// spotLight7
+	float dxx = (float)(1.5f * sin((current_rotation[1] - 25) * (PI / 180.f)));
+	float dzz = (float)(1.5f * cos((current_rotation[1] - 25) * (PI / 180.f)));
+	spotLight->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], dxx, dzz);
+	spotLight->setDir(spotdirX, 0.0f, spotdirZ);
+
 	// spotlight8
-	float dzz2 = (float)(((3.0f * cos(current_rotation[1] * (PI / 180.f))) - (2.0f * sin(current_rotation[1] * (PI / 180.f)))));
-	float dxx2 = (float)(((3.0f * sin(current_rotation[1] * (PI / 180.f))) + (2.0f * cos(current_rotation[1] * (PI / 180.f)))));
-	spotLight1->setPos(current_position[0], current_position[1] + 2.0f, current_position[2], dxx2, dzz2);
-	spotLight1->setDir(current_position[0], current_position[1] + 0.8f, current_position[2]);
+	float dxx1 = (float)(1.5f * sin((current_rotation[1] + 25) * (PI / 180.f)));
+	float dzz1 = (float)(1.5f * cos((current_rotation[1] + 25) * (PI / 180.f)));
+	spotLight1->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], dxx1, dzz1);
+	spotLight1->setDir(spotdirX, 0.0f, spotdirZ);
 }
 
 void Car::increaseRotation(float dx, float dy, float dz) {

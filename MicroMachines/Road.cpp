@@ -1,16 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "Road.h"
-#include "TGA.h"
-
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
-
 
 Road::Road() : Entity(2) {
 	glGenTextures(2, TextureArray);
@@ -57,7 +45,7 @@ void Road::createMesh() {
 
 }
 
-void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
@@ -66,8 +54,7 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 		if (mesh[i].mat.texCount != 0) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
-			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-			glUniform1i(loc, 2);
+			glUniform1i(texMode_uniformId, 2);
 		}
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
 			// send the material
@@ -230,8 +217,7 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 
 			popMatrix(MODEL);
 		}
-		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-		glUniform1i(loc, 0);
+		glUniform1i(texMode_uniformId, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

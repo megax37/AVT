@@ -32,20 +32,16 @@ struct Light{
 class LightSource {
 protected:
 	Light* light;
-	MyMesh* mesh;
-	int meshLength;
-	int frame = 0;
-	int objId = 0;
 	int lightID;
 	bool isActive = true;
 
 public:
 	LightSource();
-	LightSource(int meshCapacity, int lID);
+	LightSource(int lID);
 	~LightSource();
 
 	virtual void createMesh() = 0;
-	virtual void draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) = 0;
+	virtual void draw(VSShaderLib &shader) = 0;
 
 	bool getActive() {
 		return isActive;
@@ -54,8 +50,5 @@ public:
 	void setActive(bool active) {
 		isActive = active;
 	}
-
-	const char *getLightUniform(VSShaderLib &shader, const char *uniformName);
-
 };
 #endif

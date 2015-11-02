@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "Terrain.h"
-
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 Terrain::Terrain() : Entity(3) {
 	glGenTextures(2, TextureArray);
@@ -24,7 +14,7 @@ void Terrain::createMesh() {
 	float spec[] = { 0.4f, 0.270f, 0.075f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 100.0f;
-	int texcount = 2;
+	int texcount = 1;
 
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
@@ -35,9 +25,9 @@ void Terrain::createMesh() {
 	mesh[objId].mat.texCount = texcount;
 	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].texUnits[1] = TextureArray[1];
-	mesh[objId].position[0] = -100.0f;
-	mesh[objId].position[1] = -5.0f;
-	mesh[objId].position[2] = -100.0f;
+	mesh[objId].position[0] = 0.0f;
+	mesh[objId].position[1] = -2.5f;
+	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 
@@ -51,7 +41,7 @@ void Terrain::createMesh() {
 	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].texUnits[1] = TextureArray[1];
 	mesh[objId].position[0] = 0.0f;
-	mesh[objId].position[1] = -55.0f;
+	mesh[objId].position[1] = -30.0f;
 	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 4;
 	createCube(mesh, objId);
@@ -69,14 +59,14 @@ void Terrain::createMesh() {
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount1;
 	mesh[objId].texUnits[0] = TextureArray[1];
-	mesh[objId].position[0] = -150.0f;
-	mesh[objId].position[1] = -56.0f;
-	mesh[objId].position[2] = -150.0f;
+	mesh[objId].position[0] = 0.0f;
+	mesh[objId].position[1] = -55.5f;
+	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 }
 
-void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
@@ -85,14 +75,13 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 		if (mesh[i].mat.texCount != 0) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
-			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
 			if (mesh[i].mat.texCount == 2) {
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[1]);
-				glUniform1i(loc, 3);
+				glUniform1i(texMode_uniformId, 3);
 			}
 			else {
-				glUniform1i(loc, 2);
+				glUniform1i(texMode_uniformId, 2);
 			}
 		}
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
@@ -115,16 +104,16 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 			else if (i == 1) {	
 
 				if (j == 0) {
-					translate(MODEL, 80.0f, 0, -90.0f);
+					translate(MODEL, 85.0f, 0, -85.0f);
 				}
 				else if (j == 1) {
-					translate(MODEL, -90.0f, 0, -90.0f);
+					translate(MODEL, -85.0f, 0, -85.0f);
 				}
 				else if (j == 2) {
-					translate(MODEL, 80.0f, 0, 80.0f);
+					translate(MODEL, 85.0f, 0, 85.0f);
 				}
 				else if (j == 3) {
-					translate(MODEL, -90.0f, 0, 80.0f);
+					translate(MODEL, -85.0f, 0, 85.0f);
 				}
 				scale(MODEL, 10.0f, 50.0f, 10.0f);
 			}
@@ -146,8 +135,7 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 
 			popMatrix(MODEL);
 		}
-		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-		glUniform1i(loc, 0);
+		glUniform1i(texMode_uniformId, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

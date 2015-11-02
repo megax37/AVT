@@ -1,15 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "Butter.h"
-#include "TGA.h"
-
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 Butter::Butter() : Entity(1) {
 	glGenTextures(1, TextureArray);
@@ -52,7 +41,7 @@ void Butter::createMesh() {
 
 }
 
-void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
@@ -61,8 +50,7 @@ void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 		if (mesh[i].mat.texCount != 0) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
-			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-			glUniform1i(loc, 2);
+			glUniform1i(texMode_uniformId, 2);
 		}
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
 			// send the material
@@ -79,7 +67,7 @@ void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 			if (i == 0) {
 				scale(MODEL, 4.0f, 2.0f, 6.0f);
 			}
-		// send matrices to OGL
+			// send matrices to OGL
 			computeDerivedMatrix(PROJ_VIEW_MODEL);
 			glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
 			glUniformMatrix4fv(pvm_uniformId, 1, GL_FALSE, mCompMatrix[PROJ_VIEW_MODEL]);
@@ -93,9 +81,7 @@ void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 
 			popMatrix(MODEL);
 		}
-
-		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-		glUniform1i(loc, 0);
+		glUniform1i(texMode_uniformId, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -1,16 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "Orange.h"
-#include "TGA.h"
-
-#define PI 3.14159265
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 Orange::Orange() : Entity(1) {
 	initial_velocity[0] = 0.2f + (rand() % 100) / 100;
@@ -21,16 +9,14 @@ Orange::Orange() : Entity(1) {
 }
 
 Orange::Orange(float x, float y, float z) : Entity(1) {
-	{
-		current_position[0] = x;
-		current_position[1] = y;
-		current_position[2] = z;
-		initial_velocity[0] = 0.2f + (rand() % 101) / 100;
-		initial_velocity[1] = 0;
-		initial_velocity[2] = 0.2f + (rand() % 101) / 100;
-		glGenTextures(1, TextureArray);
-		TGA_Texture(TextureArray, "orange.tga", 0);
-	}
+	current_position[0] = x;
+	current_position[1] = y;
+	current_position[2] = z;
+	initial_velocity[0] = 0.2f + (rand() % 101) / 100;
+	initial_velocity[1] = 0;
+	initial_velocity[2] = 0.2f + (rand() % 101) / 100;
+	glGenTextures(1, TextureArray);
+	TGA_Texture(TextureArray, "orange.tga", 0);
 }
 
 void Orange::createMesh() {
@@ -58,18 +44,16 @@ void Orange::createMesh() {
 
 }
 
-void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
-
 
 	for (int i = 0; i < meshLength; ++i) {
 
 		if (mesh[i].mat.texCount != 0) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
-			loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-			glUniform1i(loc, 2);
+			glUniform1i(texMode_uniformId, 2);
 		}
 		for (int j = 0; j < mesh[i].vaoElements; j++) {
 			// send the material
@@ -101,8 +85,7 @@ void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 
 			popMatrix(MODEL);
 		}
-		loc = glGetUniformLocation(shader.getProgramIndex(), "texMode");
-		glUniform1i(loc, 0);
+		glUniform1i(texMode_uniformId, 0);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

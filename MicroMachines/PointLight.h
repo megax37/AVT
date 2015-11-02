@@ -18,13 +18,12 @@
 #include "LightSource.h"
 
 class PointLight : public LightSource {
-private:
-	bool b = true;
+
 public:
 	PointLight(float x, float y, float z, float w, int lightID);
 	~PointLight();
 	void createMesh();
-	void draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId);
+	void draw(VSShaderLib &shader);
 
 };
 #endif

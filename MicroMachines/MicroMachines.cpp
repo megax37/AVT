@@ -57,9 +57,6 @@ bool paused = false;
 std::vector<Entity*> entities;
 std::vector<LightSource*> lights;
 
-//struct MyMesh mesh[4];
-//int objId = 0; //id of the object mesh - to be used as index of mesh: mesh[objID] means the current mesh
-
 /// The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
 extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
@@ -71,7 +68,7 @@ GLint pvm_uniformId;
 GLint vm_uniformId;
 GLint normal_uniformId;
 GLint lPos_uniformId;
-GLint tex_loc0, tex_loc1, tex_loc2;
+GLint tex_loc0, tex_loc1;
 GLint texMode_uniformId;
 
 // Mouse Tracking Variables
@@ -112,6 +109,8 @@ void refresh(int value)
 
 void processKeys(unsigned char key, int xx, int yy)
 {
+	bool newFlag;
+
 	switch (key) {
 	case 27:
 		glutLeaveMainLoop();
@@ -138,40 +137,21 @@ void processKeys(unsigned char key, int xx, int yy)
 		paused = !paused;
 		break;
 	case 'M':
-		if (dirLight0->getActive()) {
-			dirLight0->setActive(false);
-		}
-		else {
-			dirLight0->setActive(true);
-		}
+		dirLight0->setActive(!dirLight0->getActive());
 		break;
 	case 'C':
-		if (pointLight1->getActive()) {
-			pointLight1->setActive(false);
-			pointLight2->setActive(false);
-			pointLight3->setActive(false);
-			pointLight4->setActive(false);
-			pointLight5->setActive(false);
-			pointLight6->setActive(false);
-		}
-		else {
-			pointLight1->setActive(true);
-			pointLight2->setActive(true);
-			pointLight3->setActive(true);
-			pointLight4->setActive(true);
-			pointLight5->setActive(true);
-			pointLight6->setActive(true);
-		}
+		newFlag = !pointLight1->getActive();
+		pointLight1->setActive(newFlag);
+		pointLight2->setActive(newFlag);
+		pointLight3->setActive(newFlag);
+		pointLight4->setActive(newFlag);
+		pointLight5->setActive(newFlag);
+		pointLight6->setActive(newFlag);
 		break;
 	case 'H':
-		if (spotLight7->getActive()) {
-			spotLight7->setActive(false);
-			spotLight8->setActive(false);
-		}
-		else {
-			spotLight7->setActive(true);
-			spotLight8->setActive(true);
-		}
+		newFlag = !spotLight7->getActive();
+		spotLight7->setActive(newFlag);
+		spotLight8->setActive(newFlag);
 		break;
 	}
 
@@ -185,24 +165,18 @@ void processUpKeys(unsigned char key, int xx, int yy) {
 void activeKeys() {
 
 	if (keystates['w']) {
-		car->setFront(true);
 		if (car->getCurrent_Speed() < 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() + 0.5f);
 		}
 		car->setCurrent_Aceleration(car->getAceleration());
-		//car->setCurrent_Speed(car->getCurrent_Speed() - 0.1);
-		//return;
 	}
 
 	if (keystates['s']) {
-		//car->setFront(false);
 
 		if (car->getCurrent_Speed() > 0.0f) {
 			car->setCurrent_Speed(car->getCurrent_Speed() - 0.5f);
 		}
 		car->setCurrent_Aceleration(-car->getAceleration());
-		//car->setCurrent_Speed(car->getCurrent_Speed() + 0.1);
-		//return;
 	}
 
 	if ((keystates['d'] && keystates['w']) || (keystates['a'] && keystates['s'])) {
@@ -349,7 +323,6 @@ GLuint setupShaders() {
 	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
 	tex_loc1 = glGetUniformLocation(shader.getProgramIndex(), "texmap1");
-	tex_loc2 = glGetUniformLocation(shader.getProgramIndex(), "texmap2");
 
 	printf("InfoLog for Hello World Shader\n%s\n\n", shader.getAllInfoLogs().c_str());
 
@@ -390,13 +363,13 @@ void renderScene(void) {
 		glUniform1i(tex_loc1, 1);
 
 		for each(LightSource* light in lights) {
-			light->draw(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+			light->draw(shader);
 		}
 
 		activeKeys();
 		for each(Entity* entity in entities) {
 			entity->move();
-			entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+			entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 		}
 
 		int i;
@@ -404,12 +377,11 @@ void renderScene(void) {
 			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
 				orange[i]->current_position[2] -= 190;
-				//orange[i] = new Orange(-100.0f + (float)(rand() % 201), 3.0f, -100.0f + (float)(rand() % 201));
 				orange[i]->createMesh();
 			}
 			orange[i]->setAceleration(globalOrangesAccelaration);
 			orange[i]->move();
-			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, lPos_uniformId);
+			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 		}
 		globalOrangesAccelaration += 0.0002f;
 
@@ -475,12 +447,13 @@ int main(int argc, char **argv) {
 	}
 
 	if (butter == NULL){
-		butter = new Butter(-80.0f + (rand() % 160), 0.3f, -80.0f + (rand() % 160));
+		butter = new Butter(-80.0f + (rand() % 160), 1.0f, -80.0f + (rand() % 160));
 	}
 
-	if (dirLight0 == NULL)
+	if (dirLight0 == NULL) {
 		dirLight0 = new DirectionalLight(-1.0f, 1.0f, 0.0f, 0.0f, 0);
-
+		dirLight0->setActive(false);
+	}
 	if (pointLight1 == NULL) {
 		pointLight1 = new PointLight(80.0f, 5.0f, -80.0f, 1.0f, 1);
 		pointLight2 = new PointLight(-80.0f, 5.0f, -80.0f, 1.0f, 2);
@@ -490,8 +463,8 @@ int main(int argc, char **argv) {
 		pointLight6 = new PointLight(-80.0f, 5.0f, 80.0f, 1.0f, 6);
 	}
 	if (spotLight7 == NULL) {
-		spotLight7 = new SpotLight(0.0f, 0.8f, 3.0f, 1.0f, 7);
-		spotLight8 = new SpotLight(2.0f, 0.8f, 3.0f, 1.0f, 8);
+		spotLight7 = new SpotLight(0.0f, 0.0f, 0.0f, 1.0f, 7);
+		spotLight8 = new SpotLight(0.0f, 0.0f, 0.0f, 1.0f, 8);
 	}
 
 	if (car == NULL)
@@ -514,11 +487,10 @@ int main(int argc, char **argv) {
 	lights.push_back(spotLight7);
 	lights.push_back(spotLight8);
 	//  Callback Registration
-		glutDisplayFunc(renderScene);
-		glutTimerFunc(0, timer, 0);
-		glutTimerFunc(0, refresh, 0);
+	glutDisplayFunc(renderScene);
+	glutTimerFunc(0, timer, 0);
+	glutTimerFunc(0, refresh, 0);
 	glutReshapeFunc(changeSize);
-	//glutIdleFunc(renderScene);
 
 	//	Mouse and Keyboard Callbacks
 	glutKeyboardFunc(processKeys);

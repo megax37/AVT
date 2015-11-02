@@ -3,14 +3,7 @@
 
 #include "PointLight.h"
 
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
-
-PointLight::PointLight(float x, float y, float z, float w, int lightID) : LightSource(1, lightID) {
+PointLight::PointLight(float x, float y, float z, float w, int lightID) : LightSource(lightID) {
 	light->position[0] = x;
 	light->position[1] = y;
 	light->position[2] = z;
@@ -22,30 +15,14 @@ PointLight::PointLight(float x, float y, float z, float w, int lightID) : LightS
 }
 
 void PointLight::createMesh() {
-	float l_diff[] = { 1.0f, 1.0f, 0.9f, 1.0f }; //luz amarela
+	float l_diff[] = { 1.0f, 1.0f, 0.9f, 1.0f };
 	float l_spec[] = { 0.8f, 0.8f, 0.4f, 1.0f };
 
 	memcpy(light->diffuse, l_diff, 4 * sizeof(float));
 	memcpy(light->specular, l_spec, 4 * sizeof(float));
-
-	/*objId = 1;
-	//memcpy(light->lightColor, amb, 4 * sizeof(float));
-	memcpy(light[1].lightColor, diff, 4 * sizeof(float));
-	//memcpy(light->specular, spec, 4 * sizeof(float));
-	//memcpy(light->emissive, emissive, 4 * sizeof(float));
-	//light->shininess = shininess;
-	//light->texCount = texcount;
-	light[1].position[0] = position[0] - 200;
-	light[1].position[1] = position[1];
-	light[1].position[2] = position[2];
-	light[1].position[3] = position[3];
-	//mesh[objId].position[0] = position[0];
-	//mesh[objId].position[1] = position[1];
-	//mesh[objId].position[2] = position[2];
-	//createSphere(3.0f, 20, mesh, objId);*/
 }
 
-void PointLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &lPos_uniformId) {
+void PointLight::draw(VSShaderLib &shader) {
 
 	GLuint loc;
 	float res[4];
@@ -159,15 +136,4 @@ void PointLight::draw(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifo
 		loc = glGetUniformLocation(shader.getProgramIndex(), "lights[6].isActive");
 		glUniform1i(loc, isActive);
 	}
-	
-	/*shader.setUniform(getLightUniform(shader, "l_pos"), res);
-	shader.setUniform(getLightUniform(shader, "diffuse"), light->diffuse);
-	shader.setUniform(getLightUniform(shader, "specular"), light->specular);
-	shader.setUniform(getLightUniform(shader, "constantAttenuation"), light->constantAttenuation);
-	shader.setUniform(getLightUniform(shader, "linearAttenuation"), light->linearAttenuation);
-	shader.setUniform(getLightUniform(shader, "quadraticAttenuation"), light->quadraticAttenuation);
-	shader.setUniform(getLightUniform(shader, "spotCutoff"), light->spotCutoff);
-	shader.setUniform(getLightUniform(shader, "isActive"), isActive);*/
-
 }
-
