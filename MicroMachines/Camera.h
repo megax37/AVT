@@ -53,8 +53,7 @@ public:
 		freeView = newFreeView;
 	}
 
-	//bool isThirdPersonView() { return thirdPersonView; }
-	void view(float ratio);
+	void view(int width, int height);
 	void lookat();
 	void chooseView(unsigned char key);
 	void calculate(float newR, float newAngleAroundPlayer, float newPitch);

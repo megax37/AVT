@@ -28,6 +28,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 
+#define MAX_LIVES 5
 #define CAPTION "MicroMachines AVT"
 int WindowHandle = 0;
 int WinX = 640, WinY = 480;
@@ -36,6 +37,7 @@ unsigned int FrameCount = 0;
 VSShaderLib shader;
 Camera *camera;
 Car *car;
+Car *lives[MAX_LIVES];
 Terrain *terrain;
 Butter *butter;
 Orange *orange[5];
@@ -330,17 +332,9 @@ GLuint setupShaders() {
 }
 
 void changeSize(int w, int h) {
-
-	float ratio;
-	// Prevent a divide by zero, when window is too short
-	if (h == 0)
-		h = 1;
 	// set the viewport to be the entire window
 	glViewport(0, 0, w, h);
-	// set the projection matrix
-	ratio = (1.0f * w) / h;
-	loadIdentity(PROJECTION);
-	camera->view(ratio);
+	camera->view(w, h);
 }
 
 void renderScene(void) {
@@ -377,13 +371,20 @@ void renderScene(void) {
 			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
 				orange[i]->current_position[2] -= 190;
-				orange[i]->createMesh();
 			}
 			orange[i]->setAceleration(globalOrangesAccelaration);
 			orange[i]->move();
 			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 		}
 		globalOrangesAccelaration += 0.0002f;
+
+		/*for (i = 0; i < 5; i++) {
+			pushMatrix(MODEL);
+			translate(MODEL, -50.0f + i * 10, 0.0f, 50.0f);
+			scale(MODEL, 0.2f, 0.2f, 0.2f);
+			lives[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+			popMatrix(MODEL);
+		}*/
 
 		glutSwapBuffers();
 	}
@@ -405,6 +406,9 @@ void init()
 	for (i = 0; i < 5; i++){
 		orange[i]->createMesh();
 	}
+	for (i = 0; i < 5; i++){
+		lives[i]->createMesh();
+	}
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
@@ -415,8 +419,6 @@ void init()
 }
 
 int main(int argc, char **argv) {
-
-	
 
 	//  GLUT initialization
 	glutInit(&argc, argv);
@@ -469,6 +471,13 @@ int main(int argc, char **argv) {
 
 	if (car == NULL)
 		car = new Car(spotLight7, spotLight8);
+
+	for (int i = 0; i < MAX_LIVES; i++) {
+		if (lives[i] == NULL){
+			lives[i] = new Car();
+			lives[i]->setIsLive(true);
+		}
+	}
 
 	if (camera == NULL)
 		camera = new Camera(car);

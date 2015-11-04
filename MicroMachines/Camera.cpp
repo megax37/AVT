@@ -15,23 +15,30 @@ void Camera::chooseView(unsigned char key) {
 		orthoView = true;
 		perspectiveView = false;
 		thirdPersonView = false;
+		view(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 		break;
 	case '2':
 		orthoView = false;
 		perspectiveView = true;
 		thirdPersonView = false;
+		view(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 		break;
 	case '3':
 		orthoView = false;
 		perspectiveView = false;
 		thirdPersonView = true;
+		view(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 		break;
 	}
 }
 
-void Camera::view(float ratio) {
+void Camera::view(int width, int height) {
+	loadIdentity(PROJECTION);
+	if (height == 0)
+		height = 1;
+	float ratio = (1.0f * width) / height;
 	if (orthoView) {
-		ortho(-200, 200, -200, 200, -200.0f, 200.0f);
+		ortho(-200.0f * ratio, 200.0f * ratio, -200.0f, 200.0f, -200.0f, 200.0f);
 	}
 	else if (perspectiveView || thirdPersonView) {
 		perspective(90.0f, ratio, 0.1f, 1000.0f);
@@ -60,7 +67,7 @@ void Camera::lookat() {
 	}
 	else if (thirdPersonView) {
 		pitch = 25.0f;
-		//angleAroundPlayer = -5.0;
+		angleAroundPlayer = 0.0f;
 		move();
 		lookAt(camX, camY, camZ, car->current_position[0], 0, car->current_position[2], 0, 1, 0);
 	}

@@ -10,10 +10,6 @@ Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
 	spotLight1 = spot1;
 }
 
-Car::Car(SpotLight* spot) : Entity(2) {
-	spotLight = spot;
-}
-
 void Car::createMesh() {
 
 	float amb[] = { 0.4f, 0.1f, 0.1f, 1.0f };

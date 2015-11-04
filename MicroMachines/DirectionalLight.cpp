@@ -23,7 +23,11 @@ void DirectionalLight::draw(VSShaderLib &shader) {
 	float res[4];
 	multMatrixPoint(VIEW, light->position, res);   //lightPos definido em World Coord so is converted to eye space
 
-	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].l_pos");
+	char * uniformName = (char*) malloc(35 * sizeof(char));
+
+	sprintf_s(uniformName, 35, "lights[%d].l_pos", lightID);
+
+	loc = glGetUniformLocation(shader.getProgramIndex(), uniformName);
 	glUniform4fv(loc, 1, res);
 	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].diffuse");
 	glUniform4fv(loc, 1, light->diffuse);
@@ -39,4 +43,6 @@ void DirectionalLight::draw(VSShaderLib &shader) {
 	glUniform1f(loc, light->spotCutoff);
 	loc = glGetUniformLocation(shader.getProgramIndex(), "lights[0].isActive");
 	glUniform1i(loc, isActive);
+
+	free(uniformName);
 }

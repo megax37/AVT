@@ -30,10 +30,6 @@ uniform struct Light {
 
 uniform Materials mat;
 
-
-//uniform Light lights[numberOfLights];
-//uniform Light light0;
-
 in Data {
 	vec4 pos;
 	vec3 normal;
@@ -43,8 +39,6 @@ in Data {
 } DataIn;
 
 void main() {
-
-	//lights[0] = light0;
 	
 	//vec3 l = normalize(DataIn.lightDir);
 	vec3 n = normalize(DataIn.normal);
@@ -53,7 +47,6 @@ void main() {
 	float attenuation;
 
 	// Initialize total lighting with ambient lighting;
-	//vec4 totalLighting = mat.ambient;
 	vec4 totalDiffuse = vec4(0.0);
 	vec4 totalSpecular = vec4(0.0);
 
@@ -103,7 +96,6 @@ void main() {
 
 			totalDiffuse = totalDiffuse + attenuation * diff;
 			totalSpecular = totalSpecular + attenuation * spec;
-			//totalLighting = totalLighting + attenuation * (diff + spec);
 		}
 	}
 
@@ -113,8 +105,6 @@ void main() {
 	if(texMode == 0) // No textures
 	{
 		colorOut = max(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, mat.ambient);
-		//totalDiffuse = totalDiffuse + mat.ambient;
-		//colorOut = min(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, vec4(1.0));
 	}
 	else if (texMode == 1) // Modulate diffuse color with texel color
 	{
