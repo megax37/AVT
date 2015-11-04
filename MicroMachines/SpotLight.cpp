@@ -17,7 +17,7 @@ SpotLight::SpotLight(float x, float y, float z, float w, int lightID) : LightSou
 	light->spotDirection[1] = 0.0f;
 	light->spotDirection[2] = 0.0f;
 	light->spotDirection[3] = 0.0f;
-	light->spotCutoff = 40.0f;
+	light->spotCutoff = 14.7f;
 	light->spotExponent = 6.0f;
 }
 

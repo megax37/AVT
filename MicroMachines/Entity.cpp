@@ -7,6 +7,9 @@ Entity::Entity() {
 	current_position[0] = 0.0f;
 	current_position[1] = 0.0f;
 	current_position[2] = 0.0f;
+	previousPosition[0] = 0.0f;
+	previousPosition[1] = 0.0f;
+	previousPosition[2] = 0.0f;
 	current_rotation[0] = 0.0f;
 	current_rotation[1] = 0.0f;
 	current_rotation[2] = 0.0f;
@@ -24,6 +27,9 @@ Entity::Entity(int meshCapacity) {
 	current_position[0] = 0.0f;
 	current_position[1] = 0.0f;
 	current_position[2] = 0.0f;
+	previousPosition[0] = 0.0f;
+	previousPosition[1] = 0.0f;
+	previousPosition[2] = 0.0f;
 	current_rotation[0] = 0.0f;
 	current_rotation[1] = 0.0f;
 	current_rotation[2] = 0.0f;

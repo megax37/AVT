@@ -3,6 +3,7 @@
 Butter::Butter() : Entity(1) {
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "butter.tga", 0);
+	box = new Box(position[0], position[2], 3);
 }
 
 Butter::Butter(float x, float y, float z) : Entity(1) {
@@ -12,6 +13,7 @@ Butter::Butter(float x, float y, float z) : Entity(1) {
 		current_position[2] = z;
 		glGenTextures(1, TextureArray);
 		TGA_Texture(TextureArray, "butter.tga", 0);
+		box = new Box(x, z, 3);
 	}
 }
 

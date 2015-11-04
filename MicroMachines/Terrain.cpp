@@ -4,6 +4,7 @@ Terrain::Terrain() : Entity(3) {
 	glGenTextures(2, TextureArray);
 	TGA_Texture(TextureArray, "lightwood.tga", 0);
 	TGA_Texture(TextureArray, "stone.tga", 1);
+	box = new Box(0, 0, 100);
 }
 
 void Terrain::createMesh() {

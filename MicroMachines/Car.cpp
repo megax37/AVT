@@ -3,11 +3,14 @@
 
 #include "Car.h"
 
-Car::Car() : Entity(2) {}
+Car::Car() : Entity(2) {
+	box = new Box(current_position[0], current_position[2], 2.0);
+}
 
 Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
 	spotLight = spot;
 	spotLight1 = spot1;
+	box = new Box(current_position[0], current_position[2], 2.0);
 }
 
 void Car::createMesh() {
@@ -111,24 +114,26 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 }
 
 void Car::increasePosition(float dx, float dy, float dz) {
+	previousPosition[0] = current_position[0];
+	previousPosition[1] = current_position[1];
+	previousPosition[2] = current_position[2];
 	current_position[0] += dx;
 	current_position[1] += dy;
 	current_position[2] += dz;
-
-	float spotdirX = (float)(sin(current_rotation[1] * (PI / 180.f)));
-	float spotdirZ = (float)(cos(current_rotation[1] * (PI / 180.f)));
+	box->setX(current_position[0]);
+	box->setZ(current_position[2]);
 
 	// spotLight7
-	float dxx = (float)(1.5f * sin((current_rotation[1] - 25) * (PI / 180.f)));
-	float dzz = (float)(1.5f * cos((current_rotation[1] - 25) * (PI / 180.f)));
-	spotLight->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], dxx, dzz);
-	spotLight->setDir(spotdirX, 0.0f, spotdirZ);
+	float dxx = (float)(sin((current_rotation[1] - 15) * (PI / 180.f)));
+	float dzz = (float)(cos((current_rotation[1] - 15) * (PI / 180.f)));
+	spotLight->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], -dxx, -dzz);
+	spotLight->setDir(dxx, 0.0f, dzz);
 
 	// spotlight8
-	float dxx1 = (float)(1.5f * sin((current_rotation[1] + 25) * (PI / 180.f)));
-	float dzz1 = (float)(1.5f * cos((current_rotation[1] + 25) * (PI / 180.f)));
-	spotLight1->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], dxx1, dzz1);
-	spotLight1->setDir(spotdirX, 0.0f, spotdirZ);
+	float dxx1 = (float)(sin((current_rotation[1] + 15) * (PI / 180.f)));
+	float dzz1 = (float)(cos((current_rotation[1] + 15) * (PI / 180.f)));
+	spotLight1->setPos(current_position[0], current_position[1] + 1.0f, current_position[2], -dxx1, -dzz1);
+	spotLight1->setDir(dxx1, 0.0f, dzz1);
 }
 
 void Car::increaseRotation(float dx, float dy, float dz) {

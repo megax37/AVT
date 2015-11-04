@@ -6,6 +6,7 @@ Orange::Orange() : Entity(1) {
 	initial_velocity[2] = 0.2f + (rand() % 100) / 100;
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "orange.tga", 0);
+	box = new Box(current_position[0], current_position[2], 3.0);
 }
 
 Orange::Orange(float x, float y, float z) : Entity(1) {
@@ -17,6 +18,7 @@ Orange::Orange(float x, float y, float z) : Entity(1) {
 	initial_velocity[2] = 0.2f + (rand() % 101) / 100;
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "orange.tga", 0);
+	box = new Box(current_position[0], current_position[2], 3.0);
 }
 
 void Orange::createMesh() {
@@ -91,9 +93,14 @@ void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 }
 
 void Orange::increasePosition(float dx, float dy, float dz) {
+	previousPosition[0] = current_position[0];
+	previousPosition[1] = current_position[1];
+	previousPosition[2] = current_position[2];
 	current_position[0] += dx;
 	current_position[1] += dy;
 	current_position[2] += dz;
+	box->setX(current_position[0]);
+	box->setZ(current_position[2]);
 }
 
 void Orange::increaseRotation(float dx, float dy, float dz) {

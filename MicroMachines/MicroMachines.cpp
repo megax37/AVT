@@ -337,6 +337,25 @@ void changeSize(int w, int h) {
 	camera->view(w, h);
 }
 
+void detectCollisions() {
+	if (Box::intersectCircularBox(car->getBox(), butter->getBox())) {
+		memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
+	}
+
+	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
+		//memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
+		car->increasePosition(0, -0.1f, 0);
+	}
+
+	for (size_t i = 0; i < 5; i++)
+	{
+		if (Box::intersectCircularBox(car->getBox(), orange[i]->getBox())) {
+			memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
+			memcpy(orange[i]->current_position, orange[i]->previousPosition, 3 * sizeof(float));
+		}
+	}
+}
+
 void renderScene(void) {
 
 	if (!paused){
@@ -363,6 +382,7 @@ void renderScene(void) {
 		activeKeys();
 		for each(Entity* entity in entities) {
 			entity->move();
+			detectCollisions();
 			entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 		}
 
@@ -374,6 +394,7 @@ void renderScene(void) {
 			}
 			orange[i]->setAceleration(globalOrangesAccelaration);
 			orange[i]->move();
+			detectCollisions();
 			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 		}
 		globalOrangesAccelaration += 0.0002f;
