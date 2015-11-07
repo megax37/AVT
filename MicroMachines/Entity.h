@@ -56,7 +56,7 @@ public:
 
 	virtual void createMesh() = 0;
 	virtual void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) = 0;
-	virtual void move() = 0;
+	virtual void move(int delta_t) = 0;
 	virtual void increasePosition(float dx, float dy, float dz) = 0;
 	virtual void increaseRotation(float dx, float dy, float dz) = 0;
 };

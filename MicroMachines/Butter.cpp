@@ -96,4 +96,4 @@ void Butter::increaseRotation(float dx, float dy, float dz) {
 
 void Butter::increasePosition(float dx, float dy, float dz) {}
 
-void Butter::move(){}
+void Butter::move(int delta_t){}

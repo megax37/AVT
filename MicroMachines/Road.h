@@ -12,7 +12,7 @@ public:
 
 	void createMesh();
 	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId);
-	void move();
+	void move(int delta_t);
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
 };

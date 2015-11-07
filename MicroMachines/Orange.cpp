@@ -70,9 +70,8 @@ void Orange::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 			pushMatrix(MODEL);
 
 			translate(MODEL, current_position[0], current_position[1], current_position[2]);
-			if (i == 0) {
-				scale(MODEL, 1.0f, 1.0f, 1.0f);
-			}
+			rotate(MODEL, current_rotation[0], 1.0f, 0.0f, 0.0f);
+
 			// send matrices to OGL
 			computeDerivedMatrix(PROJ_VIEW_MODEL);
 			glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
@@ -109,9 +108,10 @@ void Orange::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[2] += dz;
 }
 
-void Orange::move(){
-	increaseRotation(0, 0, 160.0f *((1000.0f / 60.0f) / 1000.0f));
-	//float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
-	increasePosition(0, 0, initial_velocity[2] + aceleration);
-
+void Orange::move(int delta_t) {
+	increaseRotation(160.0f *(delta_t / 1000.0f), 0, 0);
+	current_speed += aceleration * delta_t;
+	float distance = current_speed * delta_t;
+	increasePosition(0, 0, distance);
+	//increasePosition(0, 0, initial_velocity[2] + aceleration);
 }

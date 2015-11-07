@@ -13,7 +13,6 @@ private:
 	float aceleration = 5.0;
 	float current_Aceleration = 0.0f;
 	bool front = true;
-	bool isLive = false;
 	SpotLight* spotLight;
 	SpotLight* spotLight1;
 
@@ -23,7 +22,7 @@ public:
 
 	void createMesh();
 	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId);
-	void move();
+	void move(int delta_t);
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
 	bool getFront() { return front; }
@@ -36,8 +35,6 @@ public:
 	void setCurrent_Speed(float newSpeed) { current_speed = newSpeed; }
 	float getCurrentTurn_speed() { return currentTurn_speed; }
 	void setCurrentTurn_speed(float newSpeed) { currentTurn_speed = newSpeed; }
-
-	void setIsLive(bool live) { isLive = live; }
 };
 
 #endif

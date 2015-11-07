@@ -52,19 +52,13 @@ PointLight *pointLight6;
 SpotLight *spotLight7;
 SpotLight *spotLight8;
 
+int numberOfLives = MAX_LIVES;
 float globalOrangesAccelaration = 0.0f;
 
 bool paused = false;
 
 std::vector<Entity*> entities;
 std::vector<LightSource*> lights;
-
-/// The storage for matrices
-extern float mMatrix[COUNT_MATRICES][16];
-extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];
-
-/// The normal matrix
-extern float mNormal3x3[9];
 
 GLint pvm_uniformId;
 GLint vm_uniformId;
@@ -83,8 +77,7 @@ bool secondView = false;
 bool thirdView = true;
 
 // Frame counting and FPS computation
-long myTime, timebase = 0, frame = 0;
-char s[32];
+long t_actual, t_ant, timebase = 0, frame = 0;
 
 void timer(int value)
 {
@@ -333,6 +326,8 @@ GLuint setupShaders() {
 
 void changeSize(int w, int h) {
 	// set the viewport to be the entire window
+	WinX = w;
+	WinY = h;
 	glViewport(0, 0, w, h);
 	camera->view(w, h);
 }
@@ -343,7 +338,6 @@ void detectCollisions() {
 	}
 
 	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
-		//memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
 		if (car->current_position[1] > -55.0f)
 			car->increasePosition(0, -0.1f, 0);
 	}
@@ -351,74 +345,97 @@ void detectCollisions() {
 	for (size_t i = 0; i < 5; i++)
 	{
 		if (Box::intersectCircularBox(car->getBox(), orange[i]->getBox())) {
-			memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
-			memcpy(orange[i]->current_position, orange[i]->previousPosition, 3 * sizeof(float));
+			car->current_position[0] = 0.0f;
+			car->current_position[1] = 0.0f;
+			car->current_position[2] = 0.0f;
+			orange[i]->current_position[2] = -99.0f;
+			numberOfLives -= 1;
+			return;
 		}
 	}
 }
 
-void renderScene(void) {
-
-	if (!paused){
-		//GLint loc;
-		FrameCount++;
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(1, 1, 1, 1);
-		// load identity matrices
-		loadIdentity(VIEW);
-		loadIdentity(MODEL);
-		// set the camera using a function similar to gluLookAt
-		camera->lookat();
-
-		glUseProgram(shader.getProgramIndex());
-
-		glUniform1i(texMode_uniformId, 0);
-		glUniform1i(tex_loc0, 0);
-		glUniform1i(tex_loc1, 1);
-
-		for each(LightSource* light in lights) {
-			light->draw(shader);
-		}
-
+void update(int delta_t) {
+	if (!paused) {
 		activeKeys();
+
 		for each(Entity* entity in entities) {
-			entity->move();
-			detectCollisions();
-			entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+			entity->move(delta_t);
 		}
 
-		int i;
-		for (i = 0; i < 5; i++){
+		for (int i = 0; i < 5; i++){
 			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-				orange[i]->current_position[2] -= 190;
+				orange[i]->current_position[2] -= 199.0f;
 			}
-			orange[i]->setAceleration(globalOrangesAccelaration);
-			orange[i]->move();
-			detectCollisions();
-			orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+			//orange[i]->setAceleration(globalOrangesAccelaration);
+			orange[i]->move(delta_t);
 		}
-		globalOrangesAccelaration += 0.0002f;
 
-		pushMatrix(PROJECTION);
-		loadIdentity(PROJECTION);
-		pushMatrix(VIEW);
-		loadIdentity(VIEW);
-		ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
-		for (i = 0; i < 5; i++) {
-			pushMatrix(MODEL);
-			translate(MODEL, 9.0f - i * 1, 9.0f, 0.0f);
-			rotate(MODEL, 45.0f, 0, 1, 1);
-			rotate(MODEL, 90.0f, 1, 0, 0);
-			scale(MODEL, 0.2f, 0.2f, 0.2f);
-			lives[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
-			popMatrix(MODEL);
-		}
-		popMatrix(VIEW);
-		popMatrix(PROJECTION);
-
-		glutSwapBuffers();
+		detectCollisions();
 	}
+
+	//globalOrangesAccelaration += 0.0002f;
+}
+
+void timeCount(int value)
+{
+	t_actual = glutGet(GLUT_ELAPSED_TIME) - timebase;
+	update(t_actual - t_ant);
+	t_ant = t_actual;
+	glutTimerFunc(20, timeCount, 0);
+}
+
+void renderHUD() {
+	pushMatrix(PROJECTION);
+	loadIdentity(PROJECTION);
+	pushMatrix(VIEW);
+	loadIdentity(VIEW);
+	ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
+	for (int i = 0; i < numberOfLives; i++) {
+		pushMatrix(MODEL);
+		translate(MODEL, 9.0f - i * 1, 9.0f, 0.0f);
+		rotate(MODEL, 45.0f, 0, 1, 1);
+		rotate(MODEL, 90.0f, 1, 0, 0);
+		scale(MODEL, 0.2f, 0.2f, 0.2f);
+		lives[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+		popMatrix(MODEL);
+	}
+	popMatrix(VIEW);
+	popMatrix(PROJECTION);
+}
+
+void renderScene(void) {
+
+	FrameCount++;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1, 1, 1, 1);
+	// load identity matrices
+	loadIdentity(VIEW);
+	loadIdentity(MODEL);
+	// set the camera using a function similar to gluLookAt
+	camera->lookat();
+
+	glUseProgram(shader.getProgramIndex());
+	glUniform1i(texMode_uniformId, 0);
+	glUniform1i(tex_loc0, 0);
+	glUniform1i(tex_loc1, 1);
+
+	for each(LightSource* light in lights) {
+		light->draw(shader);
+	}
+
+	for each(Entity* entity in entities) {
+		entity->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	}
+
+	for (int i = 0; i < 5; i++) {
+		orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	}
+
+	renderHUD();
+
+	glutSwapBuffers();
 }
 
 void init()
@@ -469,14 +486,13 @@ int main(int argc, char **argv) {
 	if (road == NULL)
 		road = new Road();
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	//Orange respawn
 	for (int i = 0; i < 5; i++){
 		if (orange[i] == NULL){
 			//Spawns an orange between -100 and 100
 			orange[i] = new Orange(-100.0f + (rand() % 200), 3.0f, -100.0f + (rand() % 200));
 		}
-		//entities.push_back(orange[i]);
 	}
 
 	if (butter == NULL){
@@ -506,7 +522,6 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < MAX_LIVES; i++) {
 		if (lives[i] == NULL){
 			lives[i] = new Car();
-			lives[i]->setIsLive(true);
 		}
 	}
 
@@ -528,9 +543,10 @@ int main(int argc, char **argv) {
 	lights.push_back(spotLight8);
 	//  Callback Registration
 	glutDisplayFunc(renderScene);
+	glutReshapeFunc(changeSize);
 	glutTimerFunc(0, timer, 0);
 	glutTimerFunc(0, refresh, 0);
-	glutReshapeFunc(changeSize);
+	glutTimerFunc(0, timeCount, 0);
 
 	//	Mouse and Keyboard Callbacks
 	glutKeyboardFunc(processKeys);

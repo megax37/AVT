@@ -33,7 +33,6 @@ void Car::createMesh() {
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.8f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].isRotate = false;
 	mesh[objId].vaoElements = 1;
 	createCube(mesh, objId);
 
@@ -142,16 +141,16 @@ void Car::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[2] += dz;
 }
 
-void Car::move(){
-	increaseRotation(0, currentTurn_speed *((1000.0f / 60.0f) / 1000.0f), 0);
-	current_speed += current_Aceleration * ((1000.0f / 60.0f) / 1000.0f);
+void Car::move(int delta_t){
+	increaseRotation(0, currentTurn_speed *(delta_t / 1000.0f), 0);
+	current_speed += current_Aceleration * (delta_t / 1000.0f);
 	if (current_speed > max_velocity) {
 		current_speed = max_velocity;
 	}
 	else if (current_speed < -max_velocity) {
 		current_speed = -max_velocity;
 	}
-	float distance = current_speed * ((1000.0f / 60.0f) / 1000.0f);
+	float distance = current_speed * (delta_t / 1000.0f);
 	float dx = (float)(distance * sin(Car::current_rotation[1] * (PI / 180.f)));
 	float dz = (float)(distance * cos(Car::current_rotation[1] * (PI / 180.f)));
 	increasePosition(dx, 0, dz);

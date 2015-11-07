@@ -140,9 +140,3 @@ void Terrain::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_unifor
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-void Terrain::increasePosition(float dx, float dy, float dz) {}
-
-void Terrain::increaseRotation(float dx, float dy, float dz) {}
-
-void Terrain::move() {}

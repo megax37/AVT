@@ -226,4 +226,4 @@ void Road::increasePosition(float dx, float dy, float dz) {}
 
 void Road::increaseRotation(float dx, float dy, float dz) {}
 
-void Road::move() {}
+void Road::move(int delta_t) {}
