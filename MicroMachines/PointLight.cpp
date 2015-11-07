@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "PointLight.h"
 
 PointLight::PointLight(float x, float y, float z, float w, int lightID) : LightSource(lightID) {

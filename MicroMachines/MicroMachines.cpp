@@ -344,7 +344,8 @@ void detectCollisions() {
 
 	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
 		//memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
-		car->increasePosition(0, -0.1f, 0);
+		if (car->current_position[1] > -55.0f)
+			car->increasePosition(0, -0.1f, 0);
 	}
 
 	for (size_t i = 0; i < 5; i++)
@@ -399,13 +400,22 @@ void renderScene(void) {
 		}
 		globalOrangesAccelaration += 0.0002f;
 
-		/*for (i = 0; i < 5; i++) {
+		pushMatrix(PROJECTION);
+		loadIdentity(PROJECTION);
+		pushMatrix(VIEW);
+		loadIdentity(VIEW);
+		ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
+		for (i = 0; i < 5; i++) {
 			pushMatrix(MODEL);
-			translate(MODEL, -50.0f + i * 10, 0.0f, 50.0f);
+			translate(MODEL, 9.0f - i * 1, 9.0f, 0.0f);
+			rotate(MODEL, 45.0f, 0, 1, 1);
+			rotate(MODEL, 90.0f, 1, 0, 0);
 			scale(MODEL, 0.2f, 0.2f, 0.2f);
 			lives[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 			popMatrix(MODEL);
-		}*/
+		}
+		popMatrix(VIEW);
+		popMatrix(PROJECTION);
 
 		glutSwapBuffers();
 	}

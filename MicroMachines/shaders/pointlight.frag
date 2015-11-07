@@ -34,13 +34,11 @@ in Data {
 	vec4 pos;
 	vec3 normal;
 	vec3 eye;
-	//vec3 lightDir;
 	vec2 tex_coord;
 } DataIn;
 
 void main() {
-	
-	//vec3 l = normalize(DataIn.lightDir);
+
 	vec3 n = normalize(DataIn.normal);
 	vec3 e = normalize(DataIn.eye);
 	vec3 l;

@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "DirectionalLight.h"
 
 DirectionalLight::DirectionalLight(float x, float y, float z, float w, int lightID) : LightSource(lightID) {

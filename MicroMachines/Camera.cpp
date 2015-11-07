@@ -38,7 +38,7 @@ void Camera::view(int width, int height) {
 		height = 1;
 	float ratio = (1.0f * width) / height;
 	if (orthoView) {
-		ortho(-200.0f * ratio, 200.0f * ratio, -200.0f, 200.0f, -200.0f, 200.0f);
+		ortho(-160.0f * ratio, 160.0f * ratio, -160.0f, 160.0f, -160.0f, 160.0f);
 	}
 	else if (perspectiveView || thirdPersonView) {
 		perspective(90.0f, ratio, 0.1f, 1000.0f);
@@ -53,7 +53,7 @@ void Camera::lookat() {
 	else if (orthoView) {
 		pitch = 90.0f;
 		camX = 0.0f;
-		camY = 105.0f;
+		camY = 50.0f;
 		camZ = 0.0f;
 		lookAt(camX, camY, camZ, 0, 0, 0, 0, 0, 1);
 	}
@@ -69,7 +69,7 @@ void Camera::lookat() {
 		pitch = 25.0f;
 		angleAroundPlayer = 0.0f;
 		move();
-		lookAt(camX, camY, camZ, car->current_position[0], 0, car->current_position[2], 0, 1, 0);
+		lookAt(camX, camY, camZ, car->current_position[0], car->current_position[1], car->current_position[2], 0, 1, 0);
 	}
 }
 

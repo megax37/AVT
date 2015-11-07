@@ -14,7 +14,6 @@
 #include <GL/freeglut.h>
 
 // Use Very Simple Libs
-// Use Very Simple Libs
 #include "vsShaderLib.h"
 #include "AVTmathLib.h"
 #include "basic_geometry.h"
