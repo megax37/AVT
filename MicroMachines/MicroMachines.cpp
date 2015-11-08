@@ -12,12 +12,10 @@
 #include <GL/freeglut.h>
 
 // Use Very Simple Libs
-// Use Very Simple Libs
 #include "VSShaderlib.h"
 #include "AVTmathLib.h"
 #include "VertexAttrDef.h"
 #include "basic_geometry.h"
-//#include "TGA.h"
 #include "Camera.h"
 #include "Car.h"
 #include "Terrain.h"
@@ -27,6 +25,7 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "HudMessage.h"
 
 #define MAX_LIVES 5
 #define CAPTION "MicroMachines AVT"
@@ -51,6 +50,7 @@ PointLight *pointLight5;
 PointLight *pointLight6;
 SpotLight *spotLight7;
 SpotLight *spotLight8;
+HudMessage *hudMessage;
 
 int numberOfLives = MAX_LIVES;
 float globalOrangesAccelaration = 0.0f;
@@ -129,7 +129,19 @@ void processKeys(unsigned char key, int xx, int yy)
 		glDisable(GL_MULTISAMPLE);
 		break;
 	case 'p':
-		paused = !paused;
+		if (numberOfLives) { paused = !paused; }
+		break;
+	case 'r':
+		paused = false;
+		numberOfLives = MAX_LIVES;
+		t_actual = 0;
+		t_ant = 0;
+		timebase = glutGet(GLUT_ELAPSED_TIME);
+		car->current_position[0] = 0.0f;
+		car->current_position[1] = 0.0f;
+		car->current_position[2] = 0.0f;
+		car->current_rotation[1] = 0.0f;
+		car->setCurrent_Speed(0.0f);
 		break;
 	case 'M':
 		dirLight0->setActive(!dirLight0->getActive());
@@ -339,17 +351,21 @@ void detectCollisions() {
 
 	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
 		if (car->current_position[1] > -55.0f)
-			car->increasePosition(0, -0.1f, 0);
+			car->increasePosition(0, -1.0f, 0);
 	}
 
 	for (size_t i = 0; i < 5; i++)
 	{
 		if (Box::intersectCircularBox(car->getBox(), orange[i]->getBox())) {
+			if (--numberOfLives == 0) {
+				paused = true;
+				return;
+			}
 			car->current_position[0] = 0.0f;
 			car->current_position[1] = 0.0f;
 			car->current_position[2] = 0.0f;
-			orange[i]->current_position[2] = -99.0f;
-			numberOfLives -= 1;
+			orange[i]->current_position[0] = -100.0f + (rand() % 200);
+			orange[i]->current_position[2] = -100.0f;
 			return;
 		}
 	}
@@ -366,7 +382,8 @@ void update(int delta_t) {
 		for (int i = 0; i < 5; i++){
 			if (orange[i]->current_position[0]>100 || orange[i]->current_position[0] < -100 ||
 				orange[i]->current_position[2]>100 || orange[i]->current_position[2] < -100){
-				orange[i]->current_position[2] -= 199.0f;
+				orange[i]->current_position[0] = -100.0f + (rand() % 200);
+				orange[i]->current_position[2] = -100.0f;
 			}
 			//orange[i]->setAceleration(globalOrangesAccelaration);
 			orange[i]->move(delta_t);
@@ -392,6 +409,15 @@ void renderHUD() {
 	pushMatrix(VIEW);
 	loadIdentity(VIEW);
 	ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
+	if (paused) {
+		if (!numberOfLives) {
+			hudMessage->setMessageType(GAMEOVER);
+		}
+		else {
+			hudMessage->setMessageType(GAMEPAUSE);
+		}
+		hudMessage->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	}
 	for (int i = 0; i < numberOfLives; i++) {
 		pushMatrix(MODEL);
 		translate(MODEL, 9.0f - i * 1, 9.0f, 0.0f);
@@ -457,6 +483,8 @@ void init()
 	for (i = 0; i < 5; i++){
 		lives[i]->createMesh();
 	}
+
+	hudMessage->createMesh();
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
@@ -527,6 +555,9 @@ int main(int argc, char **argv) {
 
 	if (camera == NULL)
 		camera = new Camera(car);
+
+	if (hudMessage == NULL)
+		hudMessage = new HudMessage(0.0f, -3.0f, 0.0f);
 
 	entities.push_back(car);
 	entities.push_back(terrain);
