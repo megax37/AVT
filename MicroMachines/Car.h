@@ -15,6 +15,8 @@ private:
 	bool front = true;
 	SpotLight* spotLight;
 	SpotLight* spotLight1;
+	GLuint TextureArray[1];
+	bool isCube = false;
 
 public:
 	Car();

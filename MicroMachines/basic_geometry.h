@@ -28,6 +28,7 @@ struct MyMesh {
 	struct Material mat;
 };
 
+void createCar(MyMesh *mesh, int objId);
 void createCube(MyMesh *mesh, int objId);
 void createPlan(MyMesh *mesh, int objId);
 void createSphere(float radius, int divisions, MyMesh *mesh, int objId);

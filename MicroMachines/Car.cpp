@@ -4,12 +4,18 @@
 #include "Car.h"
 
 Car::Car() : Entity(2) {
+	glGenTextures(1, TextureArray);
+	TGA_Texture(TextureArray, "00001.tga", 0);
+	isCube = true;
 	box = new Box(current_position[0], current_position[2], 2.0);
 }
 
 Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
+	glGenTextures(1, TextureArray);
+	TGA_Texture(TextureArray, "00001.tga", 0);
 	spotLight = spot;
 	spotLight1 = spot1;
+	isCube = false;
 	box = new Box(current_position[0], current_position[2], 2.0);
 }
 
@@ -20,7 +26,7 @@ void Car::createMesh() {
 	float spec[] = { 1.0f, 0.5f, 0.5f, 1.0f };
 	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float shininess = 120.0f;
-	int texcount = 0;
+	int texcount = 1;
 
 	// create geometry and VAO of the pawn
 	objId = 0;
@@ -29,12 +35,21 @@ void Car::createMesh() {
 	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
-	mesh[objId].mat.texCount = texcount;
+	//mesh[objId].mat.texCount = texcount;
+	mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.8f;
 	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 1;
-	createCube(mesh, objId);
+	//createCube(mesh, objId);
+	if (isCube) {
+		mesh[objId].mat.texCount = 0;
+		createCube(mesh, objId);
+	}
+	else {
+		mesh[objId].mat.texCount = 1;
+		createCar(mesh, objId);
+	}
 
 	float amb1[] = { 0.05f, 0.05f, 0.1f, 1.0f };
 	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -68,6 +83,11 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 	GLuint loc;
 
 	for (int i = 0; i < meshLength; ++i) {
+		if (mesh[i].mat.texCount != 0) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
+			glUniform1i(texMode_uniformId, 2);
+		}
 		for (size_t j = 0; j < mesh[i].vaoElements; j++)
 		{
 			for (size_t k = 0; k < mesh[i].vaoElements; k++) {
@@ -83,7 +103,10 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 				if (i == 0) {
 					translate(MODEL, current_position[0], mesh[i].position[1] + current_position[1], current_position[2]);
 					rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
-					scale(MODEL, 2.0f, 1.0f, 3.0f);
+					rotate(MODEL, 180.0f, 0.0f, 1.0f, 0.0f);
+					if (isCube) {
+						scale(MODEL, 2.0f, 1.0f, 3.0f);
+					}
 				}
 				else if(i == 1) 
 				{
@@ -107,6 +130,9 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 				glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
 				glBindVertexArray(0);
 				popMatrix(MODEL);
+				if (!isCube) { //faz apenas o modelo para o carro
+					return;
+				}
 			}
 		}
 	}

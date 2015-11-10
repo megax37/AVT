@@ -24,11 +24,60 @@ Basic Revolution Geometry
 #include "basic_geometry.h"
 #include "cube.h"
 #include "Plan.h"
+#include "ObjLoader.h"
 
 //extern struct MyMesh mesh[3];
 //extern int objId;
 
 GLuint VboId[2];
+void createCar(MyMesh *mesh, int objId) {
+	ObjLoader* obj = new ObjLoader();
+	obj->loadObjModel("Porsche_911_GT2.obj");
+	//obj->loadObjModel("stall.obj");
+	float *verticesArray = obj->getObjMesh()->verticesArray;
+	long int verticesLength = obj->getObjMesh()->verticesLength;
+	float *textVerticesArray = obj->getObjMesh()->textVerticesArray;
+	long int textVerticesLength = obj->getObjMesh()->textVerticesLength;
+	float *normalsArray = obj->getObjMesh()->normalArray;
+	long int normalsLength = obj->getObjMesh()->normalLength;
+	unsigned int *indicesArray = obj->getObjMesh()->indicesArray;
+	long int indicesLength = obj->getObjMesh()->indicesLength;
+
+	mesh[objId].numIndexes = indicesLength;
+
+	glGenVertexArrays(1, &(mesh[objId].vao));
+	glBindVertexArray(mesh[objId].vao);
+
+	glGenBuffers(2, VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+
+	glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float) + normalsLength * sizeof(float) + textVerticesLength * sizeof(float), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, verticesLength * sizeof(float), verticesArray);
+	glBufferSubData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), normalsLength * sizeof(float), normalsArray);
+	glBufferSubData(GL_ARRAY_BUFFER, verticesLength * sizeof(float) + normalsLength * sizeof(float), textVerticesLength * sizeof(float), textVerticesArray);
+
+	glEnableVertexAttribArray(VERTEX_COORD_ATTRIB);
+	glVertexAttribPointer(VERTEX_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, 0);
+	glEnableVertexAttribArray(NORMAL_ATTRIB);
+	glVertexAttribPointer(NORMAL_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)(verticesLength * sizeof(float)));
+	glEnableVertexAttribArray(TEXTURE_COORD_ATTRIB);
+	glVertexAttribPointer(TEXTURE_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)((verticesLength * sizeof(float)) + (normalsLength * sizeof(float))));
+
+
+	//index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh[objId].numIndexes, indicesArray, GL_STATIC_DRAW);
+
+	// unbind the VAO
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glDisableVertexAttribArray(VERTEX_COORD_ATTRIB);
+	glDisableVertexAttribArray(NORMAL_ATTRIB);
+	glDisableVertexAttribArray(TEXTURE_COORD_ATTRIB);
+
+	mesh[objId].type = GL_TRIANGLES;
+}
 
 void createCube(MyMesh *mesh, int objId) {
 
