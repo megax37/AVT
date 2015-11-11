@@ -15,7 +15,7 @@ Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(3) {
 	TGA_Texture(TextureArray, "00001.tga", 0);
 	spotLight = spot;
 	spotLight1 = spot1;
-	isCube = false;
+	isCube = true;
 	box = new Box(current_position[0], current_position[2], 2.0);
 }
 

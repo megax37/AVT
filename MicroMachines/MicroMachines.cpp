@@ -69,12 +69,12 @@ GLint texMode_uniformId;
 GLint skyColorId;
 GLint fog;
 
-float RED = 0.9;
-float lastRED = 0.0;
-float GREEN = 0.9;
-float lastGREEN = 0.0;
-float BLUE = 0.9;
-float lastBLUE = 0.0;
+float RED = 0.0f;
+float lastRED = 0.0f;
+float GREEN = 0.0f;
+float lastGREEN = 0.0f;
+float BLUE = 0.0f;
+float lastBLUE = 0.0f;
 bool fogActive = false;
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
@@ -151,9 +151,9 @@ void processKeys(unsigned char key, int xx, int yy)
 			lastRED = RED;
 			lastBLUE = BLUE;
 			lastGREEN = GREEN;
-			RED = 0.5f;
-			GREEN = 0.5f;
-			BLUE = 0.5f;
+			RED = 0.4f;
+			GREEN = 0.4f;
+			BLUE = 0.4f;
 			fogActive = true;
 		}
 		break;
@@ -180,9 +180,9 @@ void processKeys(unsigned char key, int xx, int yy)
 			BLUE = 0.0f;
 		}
 		else {
-			RED = 0.90f;
-			GREEN = 0.90f;
-			BLUE = 0.90f;
+			RED = 0.95f;
+			GREEN = 0.95f;
+			BLUE = 0.95f;
 		}
 		break;
 	case 'C':
@@ -413,9 +413,7 @@ void detectCollisions() {
 }
 
 void update(int delta_t) {
-	float skyColor[4] = { RED, GREEN, BLUE, 1.0 };
-	glUniform1i(fog, fogActive);
-	glUniform4fv(skyColorId, 1, skyColor);
+	//float skyColor[4] = { RED, GREEN, BLUE, 1.0 };
 	if (!paused) {
 		activeKeys();
 
@@ -488,7 +486,10 @@ void renderScene(void) {
 	glUseProgram(shader.getProgramIndex());
 	glUniform1i(texMode_uniformId, 0);
 	glUniform1i(tex_loc0, 0);
+	float skyColor[4] = { 0.5, 0.5, 0.5, 1.0 };
 	glUniform1i(tex_loc1, 1);
+	glUniform1i(fog, fogActive);
+	glUniform4fv(skyColorId, 1, skyColor);
 
 	for each(LightSource* light in lights) {
 		light->draw(shader);

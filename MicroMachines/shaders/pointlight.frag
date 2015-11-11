@@ -102,36 +102,33 @@ void main() {
 
 	vec4 texel;
 	vec4 texel1;
+	const float density = 0.030;
+	const float gradient = 2;
+	float distance = length(DataIn.pos.xyz);
+
+	float visibility = exp(-pow((distance*density), gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
 
 	if(texMode == 0) // No textures
 	{
 		colorOut = max(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, mat.ambient);
-		if(fogActive) {
-			colorOut = mix(skyColor, colorOut, DataIn.visibility);
-		}
 	}
 	else if (texMode == 1) // Modulate diffuse color with texel color
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * mat.diffuse * texel + totalSpecular * mat.specular, mat.ambient * texel);
-		if(fogActive) {
-			colorOut = mix(skyColor, colorOut, DataIn.visibility);
-		}
 	}
 	else if (texMode == 2) // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * texel + totalSpecular * mat.specular, 0.1*texel);
-		if(fogActive) {
-			colorOut = mix(skyColor, colorOut, DataIn.visibility);
-		}
 	}
 	else {
 		texel = texture(texmap0, DataIn.tex_coord);
 		texel1 = texture(texmap1, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * texel * texel1 + totalSpecular * mat.specular, 0.1 * texel * texel1);
-		if(fogActive) {
-			colorOut = mix(skyColor, colorOut, DataIn.visibility);
-		}
+	}
+	if(fogActive) {
+			colorOut = mix(skyColor, colorOut, visibility);
 	}
 }
