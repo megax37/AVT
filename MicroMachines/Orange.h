@@ -20,6 +20,7 @@ public:
 	void increasePosition(float dx, float dy, float dz);
 	void increaseRotation(float dx, float dy, float dz);
 	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId);
+	void setCurrentSpeed(float speed);
 
 	void setAceleration(float newAceleration) {
 		aceleration = newAceleration;
@@ -28,6 +29,8 @@ public:
 	float getAceleration() {
 		return aceleration;
 	}
+
+	
 };
 
 #endif

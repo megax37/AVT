@@ -1,9 +1,8 @@
 #include "Road.h"
 
 Road::Road() : Entity(2) {
-	glGenTextures(2, TextureArray);
+	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "road.tga", 0);
-	TGA_Texture(TextureArray, "cheerios.tga", 1);
 }
 
 void Road::createMesh() {
@@ -26,23 +25,29 @@ void Road::createMesh() {
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.0f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].vaoElements = 14;
+	mesh[objId].vaoElements = 15;
 	createCube(mesh, objId);
 
+	float amb1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float diff1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float spec1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float emissive1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float shininess1 = 100.0f;
+	int texcount1 = 1;
+
 	objId = 1;
-	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
-	mesh[objId].mat.shininess = shininess;
-	mesh[objId].mat.texCount = texcount;
-	mesh[objId].texUnits[0] = TextureArray[1];
+	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.emissive, emissive1, 4 * sizeof(float));
+	mesh[objId].mat.shininess = shininess1;
+	mesh[objId].mat.texCount = 0;
+	//mesh[objId].texUnits[0] = TextureArray[1];
 	mesh[objId].position[0] = 0.0f;
 	mesh[objId].position[1] = 0.0f;
 	mesh[objId].position[2] = 0.0f;
-	mesh[objId].vaoElements = 20;
-	createTorus(0.20f, 0.80f, 20, 20, mesh, objId);
-
+	mesh[objId].vaoElements = 1;
+	createCube(mesh, objId);
 }
 
 void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
@@ -71,136 +76,72 @@ void Road::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId
 			translate(MODEL, mesh[i].position[0], mesh[i].position[1], mesh[i].position[2]);
 			if (i == 0){
 				if (j == 0){
-					translate(MODEL, 0.0f, 0.0f, -80.0f);
-				}
-				else if (j == 1) {
-					translate(MODEL, 50.0f, 0.01f, -80.0f);
-					rotate(MODEL, -45.0f, 0.0f, 1.0f,0.0f);
-				}
-				else if (j == 2) {
-					translate(MODEL, 85.0f, 0.0f, -45.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 3) {
-					translate(MODEL, 76.0f, 0.01f, 0.0f);
-					rotate(MODEL, -80.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 4) {
-					translate(MODEL, 85.0f, 0.0f, 45.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 5) {
-					translate(MODEL, 28.0f, 0.01f, 85.0f);
-				}
-				else if (j == 6) {
-					translate(MODEL, -20.0f, 0.0f, 85.0f);
-				}
-				else if (j == 7) {
-					translate(MODEL, -31.0f, 0.01f, 49.0f);
-					rotate(MODEL, -60.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 8) {
-					translate(MODEL, -43.0f, 0.0f, 56.0f);
-					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 9) {
-					translate(MODEL, -12.0f, 0.01f, 32.0f);
+					translate(MODEL, 0.0f, 0.0f, 0.0f);
 					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
 				}
-				else if (j == 10) {
-					translate(MODEL, -49.0f, 0.0f, -15.0f);
-					rotate(MODEL, 20.0f, 0.0f, 1.0f, 0.0f);
+				if (j == 1){
+					translate(MODEL, 8.0f, 0.01f, 46.0f);
+					rotate(MODEL, 110.0f, 0.0f, 1.0f, 0.0f);
 				}
-				else if (j == 11) {
-					translate(MODEL, -45.0f, 0.01f, -2.0f);
-					rotate(MODEL, 134.0f, 0.0f, 1.0f, 0.0f);
+				if (j == 2){
+					translate(MODEL, 36.0f, 0.0f, 73.0f);
+					rotate(MODEL, -20.0f, 0.0f, 1.0f, 0.0f);
+
+				}if (j == 3){
+					translate(MODEL, 70.0f, 0.01f, 65.0f);
+					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
+
+				}if (j == 4){
+					translate(MODEL, 85.0f, 0.0f, 26.0f);
+					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
 				}
-				else if (j == 12) {
-					translate(MODEL, -86.0f, 0.0f, -44.0f);
+				if (j == 5){
+					translate(MODEL, 85.0f, 0.0f, -24.0f);
+					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
+				}
+				if (j == 6){
+					translate(MODEL, 70.0f, 0.01f, -60.0f);
+					rotate(MODEL, -45.0f, 0.0f, 1.0f, 0.0f);
+				}
+				if (j == 7){
+					translate(MODEL, 32.0f, 0.0f, -76.0f);
+				}
+				if (j == 8){
+					translate(MODEL, -18.0f, 0.01f, -76.0f);
+				}
+				if (j == 9){
+					translate(MODEL, -55.0f, 0.0f, -60.0f);
 					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
 				}
-				else if (j == 13) {
-					translate(MODEL, -50.0f, 0.01f, -80.0f);
+				if (j == 10){
+					translate(MODEL, -70.0f, 0.01f, -23.0f);
+					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
 				}
+				if (j == 11){
+					translate(MODEL, -70.0f, 0.0f, 27.0f);
+					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
+				}
+				if (j == 12){
+					translate(MODEL, -53.0f, 0.01f, 45.0f);
+					rotate(MODEL, 35.0f, 0.0f, 1.0f, 0.0f);
+				}
+				if (j == 13){
+					translate(MODEL, -35.0f, 0.0f, 12.0f);
+					rotate(MODEL, 90.0, 0.0f, 1.0f, 0.0f);
+				}
+				if (j == 14){
+						translate(MODEL, -17.0f, 0.01f, -18.0f);
+				}
+
 				scale(MODEL, 50.0f, 0.2f, 15.0f);
 			}
+
 			if (i == 1){
 				if (j == 0){
-					translate(MODEL, 0.0f, 0.8f, -80.0f);
-				}
-				else if (j == 1) {
-					translate(MODEL, 50.0f, 0.8f, -80.0f);
-					rotate(MODEL, -45.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 2) {
-					translate(MODEL, 85.0f, 0.8f, -45.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 3) {
-					translate(MODEL, 76.0f, 0.8f, 0.0f);
-					rotate(MODEL, -80.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 4) {
-					translate(MODEL, 85.0f, 0.8f, 45.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 5) {
-					translate(MODEL, 28.0f, 0.8f, 85.0f);
-				}
-				else if (j == 6) {
-					translate(MODEL, -20.0f, 0.8f, 98.0f);
-				}
-				else if (j == 7) {
-					translate(MODEL, -35.0f, 0.8f, 49.0f);
-					rotate(MODEL, -60.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 8) {
-					translate(MODEL, -43.0f, 0.8f, 56.0f);
-					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 9) {
-					translate(MODEL, -20.0f, 0.8f, 32.0f);
+					translate(MODEL, 0.0f, 0.01f, 10.0f);
 					rotate(MODEL, 90.0f, 0.0f, 1.0f, 0.0f);
+					scale(MODEL, 2.0f, 0.2f, 15.0f);
 				}
-				else if (j == 10) {
-					translate(MODEL, -58.0f, 0.8f, -15.0f);
-					rotate(MODEL, 20.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 11) {
-					translate(MODEL, -45.0f, 0.8f, -2.0f);
-					rotate(MODEL, 134.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 12) {
-					translate(MODEL, -86.0f, 0.8f, -44.0f);
-					rotate(MODEL, 45.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 13) {
-					translate(MODEL, -50.0f, 0.8f, -80.0f);
-				}
-				else if (j == 14) {
-					translate(MODEL, 0.0f, 0.8f, -65.0f);
-				}
-				else if (j == 15) {
-					translate(MODEL, 45.0f, 0.8f, -65.0f);
-					rotate(MODEL, -45.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 16) {
-					translate(MODEL, 69.0f, 0.8f, -40.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 17) {
-					translate(MODEL, 62.0f, 0.8f, 0.0f);
-					rotate(MODEL, -80.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 18) {
-					translate(MODEL, 70.0f, 0.8f, 45.0f);
-					rotate(MODEL, -100.0f, 0.0f, 1.0f, 0.0f);
-				}
-				else if (j == 19) {
-					translate(MODEL, -10.0f, 0.8f, 85.0f);
-				}
-				scale(MODEL, 2.0f, 1.5f, 2.0f);
-
 			}
 
 			// send matrices to OGL

@@ -108,6 +108,10 @@ void Orange::increaseRotation(float dx, float dy, float dz) {
 	current_rotation[2] += dz;
 }
 
+void Orange::setCurrentSpeed(float speed){
+	current_speed = speed;
+}
+
 void Orange::move(int delta_t) {
 	increaseRotation(160.0f *(delta_t / 1000.0f), 0, 0);
 	current_speed += aceleration * delta_t;

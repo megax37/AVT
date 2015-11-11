@@ -399,12 +399,16 @@ void detectCollisions() {
 	{
 		if (Box::intersectCircularBox(car->getBox(), orange[i]->getBox())) {
 			if (--numberOfLives == 0) {
+				for (int i = 0; i < 5; i++) {
+					orange[i] -> setCurrentSpeed(0);
+				}
 				paused = true;
 				return;
 			}
 			car->current_position[0] = 0.0f;
 			car->current_position[1] = 0.0f;
 			car->current_position[2] = 0.0f;
+			car->setCurrent_Speed(0);
 			orange[i]->current_position[0] = -100.0f + (rand() % 200);
 			orange[i]->current_position[2] = -100.0f;
 			return;
