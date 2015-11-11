@@ -75,7 +75,6 @@ float GREEN = 0.9;
 float lastGREEN = 0.0;
 float BLUE = 0.9;
 float lastBLUE = 0.0;
-float day = 1; //1 Day Color, //0 NightColor
 bool fogActive = false;
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
@@ -141,19 +140,6 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 'n':
 		glDisable(GL_MULTISAMPLE);
 		break;
-	case'l':
-		if (day == 0) {
-			RED = 0.0f;
-			GREEN = 0.0f;
-			BLUE = 0.0f;
-			day = 1;
-		} else {
-			RED = 0.90f;
-			GREEN = 0.90f;
-			BLUE = 0.90f;
-			day = 0;
-		}
-		break;
 	case 'f':
 		if (fogActive) {
 			RED = lastRED;
@@ -188,6 +174,16 @@ void processKeys(unsigned char key, int xx, int yy)
 		break;
 	case 'M':
 		dirLight0->setActive(!dirLight0->getActive());
+		if (!dirLight0->getActive()) {
+			RED = 0.0f;
+			GREEN = 0.0f;
+			BLUE = 0.0f;
+		}
+		else {
+			RED = 0.90f;
+			GREEN = 0.90f;
+			BLUE = 0.90f;
+		}
 		break;
 	case 'C':
 		newFlag = !pointLight1->getActive();

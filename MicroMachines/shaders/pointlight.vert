@@ -16,7 +16,7 @@ out Data {
 	float visibility;
 } DataOut;
 
-const float density = 0.005;
+const float density = 0.035;
 const float gradient = 1.5;
 
 void main () {
