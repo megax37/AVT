@@ -3,19 +3,19 @@
 
 #include "Car.h"
 
-Car::Car() : Entity(2) {
+Car::Car() : Entity(3) {
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "00001.tga", 0);
 	isCube = true;
 	box = new Box(current_position[0], current_position[2], 2.0);
 }
 
-Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(2) {
+Car::Car(SpotLight* spot, SpotLight* spot1) : Entity(3) {
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "00001.tga", 0);
 	spotLight = spot;
 	spotLight1 = spot1;
-	isCube = false;
+	isCube = true;
 	box = new Box(current_position[0], current_position[2], 2.0);
 }
 
@@ -28,7 +28,7 @@ void Car::createMesh() {
 	float shininess = 120.0f;
 	int texcount = 1;
 
-	// create geometry and VAO of the pawn
+	// create geometry and VAO of the chassis
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
@@ -58,7 +58,7 @@ void Car::createMesh() {
 	float shininess1 = 100.0f;
 	int texcount1 = 0;
 
-	// create geometry and VAO of the cylinder
+	// create geometry and VAO of the wheels
 	objId = 1;
 	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
@@ -70,19 +70,43 @@ void Car::createMesh() {
 	mesh[objId].position[1] = 0.8f;
 	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 2;
-	mesh[objId].isRotate = true;
 	mesh[objId].rotation[0] = 90.0f;
 	mesh[objId].rotation[1] = 0.0f;
 	mesh[objId].rotation[2] = 0.0f;
 	mesh[objId].rotation[3] = 1.0f;
 	createTorus(0.20f, 0.80f, 20, 20, mesh, objId);
+
+	/*float amb1[] = { 0.05f, 0.05f, 0.1f, 1.0f };
+	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float spec1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float emissive1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float shininess1 = 100.0f;
+	int texcount1 = 0;*/
+
+	// create geometry and VAO of the windshield
+	objId = 2;
+	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.emissive, emissive1, 4 * sizeof(float));
+	mesh[objId].mat.shininess = shininess1;
+	mesh[objId].mat.texCount = texcount1;
+	mesh[objId].position[0] = 0.0f;
+	mesh[objId].position[1] = 0.0f;
+	mesh[objId].position[2] = 0.0f;
+	mesh[objId].vaoElements = 1;
+	mesh[objId].rotation[0] = 90.0f;
+	mesh[objId].rotation[1] = 0.0f;
+	mesh[objId].rotation[2] = 0.0f;
+	mesh[objId].rotation[3] = 1.0f;
+	createCube(mesh, objId);
 }
 
 void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
-	for (int i = 0; i < meshLength; ++i) {
+	for (int i = 0; i < meshLength - 1; ++i) {
 		if (mesh[i].mat.texCount != 0) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh[i].texUnits[0]);
@@ -136,6 +160,40 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 			}
 		}
 	}
+}
+
+void Car::drawWindshield(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
+
+	GLuint loc;
+	int i = 2;
+
+	loc = glGetUniformLocation(shader.getProgramIndex(), "mat.ambient");
+	glUniform4fv(loc, 1, mesh[i].mat.ambient);
+	loc = glGetUniformLocation(shader.getProgramIndex(), "mat.diffuse");
+	glUniform4fv(loc, 1, mesh[i].mat.diffuse);
+	loc = glGetUniformLocation(shader.getProgramIndex(), "mat.specular");
+	glUniform4fv(loc, 1, mesh[i].mat.specular);
+	loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
+	glUniform1f(loc, mesh[i].mat.shininess);
+	pushMatrix(MODEL);
+	translate(MODEL, current_position[0], current_position[1], current_position[2]);
+	rotate(MODEL, current_rotation[1], 0.0f, 1.0f, 0.0f);
+	translate(MODEL, 0, 1.8f, 1.4f);
+	rotate(MODEL, 55.0f, 1.0f, 0.0f, 0.0f);
+	scale(MODEL, 1.5f, 0.0f, 0.8f);
+
+	// send matrices to OGL
+	computeDerivedMatrix(PROJ_VIEW_MODEL);
+	glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
+	glUniformMatrix4fv(pvm_uniformId, 1, GL_FALSE, mCompMatrix[PROJ_VIEW_MODEL]);
+	computeNormalMatrix3x3();
+	glUniformMatrix3fv(normal_uniformId, 1, GL_FALSE, mNormal3x3);
+
+	// Render mesh
+	glBindVertexArray(mesh[i].vao);
+	glDrawElements(mesh[i].type, mesh[i].numIndexes, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	popMatrix(MODEL);
 }
 
 void Car::increasePosition(float dx, float dy, float dz) {

@@ -7,7 +7,7 @@ PointLight::PointLight(float x, float y, float z, float w, int lightID) : LightS
 	light->position[3] = w;
 	light->constantAttenuation = 0.5f;
 	light->linearAttenuation = 0.01f;
-	light->quadraticAttenuation = 0.0f;
+	light->quadraticAttenuation = 0.0001f;
 	light->spotCutoff = 180.0f;
 }
 

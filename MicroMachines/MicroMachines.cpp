@@ -119,6 +119,9 @@ void processKeys(unsigned char key, int xx, int yy)
 	case '3':
 		camera->chooseView('3');
 		break;
+	case '4':
+		camera->chooseView('4');
+		break;
 	case 'c':
 		printf("Camera Spherical Coordinates (%f, %f, %f)\n", camera->getAngleAroundPlayer(), camera->getPitch(), camera->getR());
 		break;
@@ -434,8 +437,7 @@ void renderHUD() {
 void renderScene(void) {
 
 	FrameCount++;
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	// load identity matrices
 	loadIdentity(VIEW);
 	loadIdentity(MODEL);
@@ -449,6 +451,18 @@ void renderScene(void) {
 
 	for each(LightSource* light in lights) {
 		light->draw(shader);
+	}
+
+	if (camera->getCurrentView() == "pilotView") {
+		glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+		car->drawWindshield(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		glStencilFunc(GL_EQUAL, 0x1, 0x1);
+	}
+	else {
+		glStencilFunc(GL_ALWAYS, 0x1, 0x1);
 	}
 
 	for each(Entity* entity in entities) {
@@ -488,6 +502,7 @@ void init()
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -498,7 +513,7 @@ int main(int argc, char **argv) {
 
 	//  GLUT initialization
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_STENCIL | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
 
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);

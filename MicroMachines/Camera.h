@@ -12,6 +12,7 @@ class Camera {
 private:
 	// Camera Position
 	float camX, camY, camZ;
+	float atX, atY, atZ;
 	float r = 10.0f;
 	float angleAroundPlayer = 0.0;
 	float pitch = 90;
@@ -19,6 +20,7 @@ private:
 	bool orthoView = false;
 	bool perspectiveView = false;
 	bool thirdPersonView = true;
+	bool pilotView = false;
 	bool freeView = false;
 	std::string currentView = "thirdPersonView";
 
@@ -51,6 +53,10 @@ public:
 
 	void setFreeView(bool newFreeView) {
 		freeView = newFreeView;
+	}
+
+	std::string getCurrentView() {
+		return currentView;
 	}
 
 	void view(int width, int height);
