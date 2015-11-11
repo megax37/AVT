@@ -66,7 +66,17 @@ GLint normal_uniformId;
 GLint lPos_uniformId;
 GLint tex_loc0, tex_loc1;
 GLint texMode_uniformId;
+GLint skyColorId;
+GLint fog;
 
+float RED = 0.9;
+float lastRED = 0.0;
+float GREEN = 0.9;
+float lastGREEN = 0.0;
+float BLUE = 0.9;
+float lastBLUE = 0.0;
+float day = 1; //1 Day Color, //0 NightColor
+bool fogActive = false;
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
 bool keystates[256];
@@ -130,6 +140,36 @@ void processKeys(unsigned char key, int xx, int yy)
 		break;
 	case 'n':
 		glDisable(GL_MULTISAMPLE);
+		break;
+	case'l':
+		if (day == 0) {
+			RED = 0.0f;
+			GREEN = 0.0f;
+			BLUE = 0.0f;
+			day = 1;
+		} else {
+			RED = 0.90f;
+			GREEN = 0.90f;
+			BLUE = 0.90f;
+			day = 0;
+		}
+		break;
+	case 'f':
+		if (fogActive) {
+			RED = lastRED;
+			BLUE = lastBLUE;
+			GREEN = lastGREEN;
+			fogActive = false;
+		}
+		else {
+			lastRED = RED;
+			lastBLUE = BLUE;
+			lastGREEN = GREEN;
+			RED = 0.5f;
+			GREEN = 0.5f;
+			BLUE = 0.5f;
+			fogActive = true;
+		}
 		break;
 	case 'p':
 		if (numberOfLives) { paused = !paused; }
@@ -331,6 +371,8 @@ GLuint setupShaders() {
 	vm_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_viewModel");
 	normal_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_normal");
 	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
+	skyColorId = glGetUniformLocation(shader.getProgramIndex(), "skyColor");
+	fog = glGetUniformLocation(shader.getProgramIndex(), "fogActive");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
 	tex_loc1 = glGetUniformLocation(shader.getProgramIndex(), "texmap1");
 
@@ -375,6 +417,9 @@ void detectCollisions() {
 }
 
 void update(int delta_t) {
+	float skyColor[4] = { RED, GREEN, BLUE, 1.0 };
+	glUniform1i(fog, fogActive);
+	glUniform4fv(skyColorId, 1, skyColor);
 	if (!paused) {
 		activeKeys();
 
@@ -474,7 +519,7 @@ void renderScene(void) {
 	}
 
 	renderHUD();
-
+	glClearColor(RED, GREEN, BLUE, 1.0);
 	glutSwapBuffers();
 }
 
@@ -505,8 +550,6 @@ void init()
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
 }
 
 int main(int argc, char **argv) {

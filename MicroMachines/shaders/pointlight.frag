@@ -4,6 +4,8 @@ uniform sampler2D texmap0;
 uniform sampler2D texmap1;
 
 uniform int texMode;
+uniform vec4 skyColor;
+uniform bool fogActive;
 
 out vec4 colorOut;
 
@@ -35,6 +37,7 @@ in Data {
 	vec3 normal;
 	vec3 eye;
 	vec2 tex_coord;
+	float visibility;
 } DataIn;
 
 void main() {
@@ -103,20 +106,32 @@ void main() {
 	if(texMode == 0) // No textures
 	{
 		colorOut = max(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, mat.ambient);
+		if(fogActive) {
+			colorOut = mix(skyColor, colorOut, DataIn.visibility);
+		}
 	}
 	else if (texMode == 1) // Modulate diffuse color with texel color
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * mat.diffuse * texel + totalSpecular * mat.specular, mat.ambient * texel);
+		if(fogActive) {
+			colorOut = mix(skyColor, colorOut, DataIn.visibility);
+		}
 	}
 	else if (texMode == 2) // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * texel + totalSpecular * mat.specular, 0.1*texel);
+		if(fogActive) {
+			colorOut = mix(skyColor, colorOut, DataIn.visibility);
+		}
 	}
 	else {
 		texel = texture(texmap0, DataIn.tex_coord);
 		texel1 = texture(texmap1, DataIn.tex_coord);
 		colorOut = max(totalDiffuse * texel * texel1 + totalSpecular * mat.specular, 0.1 * texel * texel1);
+		if(fogActive) {
+			colorOut = mix(skyColor, colorOut, DataIn.visibility);
+		}
 	}
 }
