@@ -23,11 +23,7 @@ Basic Revolution Geometry
 #include "VertexAttrDef.h"
 #include "basic_geometry.h"
 #include "cube.h"
-#include "Plan.h"
 #include "ObjLoader.h"
-
-//extern struct MyMesh mesh[3];
-//extern int objId;
 
 GLuint VboId[2];
 void createCar(MyMesh *mesh, int objId) {
@@ -117,9 +113,18 @@ void createCube(MyMesh *mesh, int objId) {
 	mesh[objId].type = GL_TRIANGLES;
 }
 
-void createPlan(MyMesh *mesh, int objId) {
+void createQuad(float size_x, float size_y, MyMesh *mesh, int objId) {
 
-	mesh[objId].numIndexes = faceCountPlan * 3;
+	int i;
+	float vert[16];
+	mesh[objId].numIndexes = 2 * 3;
+
+	memcpy(vert, quad_vertices, sizeof(float) * 16);
+
+	for (i = 0; i< 4; i++) {
+		vert[i * 4] *= size_x;
+		vert[i * 4 + 1] *= size_y;
+	}
 
 	glGenVertexArrays(1, &(mesh[objId].vao));
 	glBindVertexArray(mesh[objId].vao);
@@ -127,22 +132,22 @@ void createPlan(MyMesh *mesh, int objId) {
 	glGenBuffers(2, VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPlan) + sizeof(normalsPlan) + sizeof(texCoordsPlan), NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verticesPlan), verticesPlan);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(verticesPlan), sizeof(normalsPlan), normalsPlan);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(verticesPlan) + sizeof(normalsPlan), sizeof(texCoordsPlan), texCoordsPlan);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices) + sizeof(quad_normals) + sizeof(quad_texCoords), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad_vertices), vert);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(quad_vertices), sizeof(quad_normals), quad_normals);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(quad_vertices) + sizeof(quad_normals), sizeof(quad_texCoords), quad_texCoords);
 
 	glEnableVertexAttribArray(VERTEX_COORD_ATTRIB);
 	glVertexAttribPointer(VERTEX_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, 0);
 	glEnableVertexAttribArray(NORMAL_ATTRIB);
-	glVertexAttribPointer(NORMAL_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)sizeof(verticesPlan));
+	glVertexAttribPointer(NORMAL_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)sizeof(quad_vertices));
 	glEnableVertexAttribArray(TEXTURE_COORD_ATTRIB);
-	glVertexAttribPointer(TEXTURE_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)(sizeof(verticesPlan) + sizeof(normalsPlan)));
+	glVertexAttribPointer(TEXTURE_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)(sizeof(quad_vertices) + sizeof(quad_normals)));
 
 
 	//index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh[objId].numIndexes, faceIndexPlan, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh[objId].numIndexes, quad_faceIndex, GL_STATIC_DRAW);
 
 	// unbind the VAO
 	glBindVertexArray(0);

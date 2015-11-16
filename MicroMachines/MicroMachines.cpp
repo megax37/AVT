@@ -26,6 +26,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "HudMessage.h"
+#include "Firework.h"
 
 #define MAX_LIVES 5
 #define CAPTION "MicroMachines AVT"
@@ -51,9 +52,9 @@ PointLight *pointLight6;
 SpotLight *spotLight7;
 SpotLight *spotLight8;
 HudMessage *hudMessage;
+Firework *lapFirework;
 
 int numberOfLives = MAX_LIVES;
-float globalOrangesAccelaration = 0.0f;
 
 bool paused = false;
 
@@ -63,7 +64,6 @@ std::vector<LightSource*> lights;
 GLint pvm_uniformId;
 GLint vm_uniformId;
 GLint normal_uniformId;
-GLint lPos_uniformId;
 GLint tex_loc0, tex_loc1;
 GLint texMode_uniformId;
 GLint skyColorId;
@@ -76,14 +76,10 @@ float lastGREEN = 0.0f;
 float BLUE = 0.0f;
 float lastBLUE = 0.0f;
 bool fogActive = false;
+float skyColor[4] = { 0.5, 0.5, 0.5, 1.0 };
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
 bool keystates[256];
-bool front = true;
-
-bool firstView = false;
-bool secondView = false;
-bool thirdView = true;
 
 // Frame counting and FPS computation
 long t_actual, t_ant, timebase = 0, frame = 0;
@@ -140,6 +136,9 @@ void processKeys(unsigned char key, int xx, int yy)
 	case 'n':
 		glDisable(GL_MULTISAMPLE);
 		break;
+	case 'e':
+		lapFirework->initParticles();
+		break;
 	case 'f':
 		if (fogActive) {
 			RED = lastRED;
@@ -151,9 +150,9 @@ void processKeys(unsigned char key, int xx, int yy)
 			lastRED = RED;
 			lastBLUE = BLUE;
 			lastGREEN = GREEN;
-			RED = 0.4f;
-			GREEN = 0.4f;
-			BLUE = 0.4f;
+			RED = 0.45f;
+			GREEN = 0.45f;
+			BLUE = 0.45f;
 			fogActive = true;
 		}
 		break;
@@ -366,7 +365,6 @@ GLuint setupShaders() {
 	pvm_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_pvm");
 	vm_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_viewModel");
 	normal_uniformId = glGetUniformLocation(shader.getProgramIndex(), "m_normal");
-	lPos_uniformId = glGetUniformLocation(shader.getProgramIndex(), "l_pos");
 	skyColorId = glGetUniformLocation(shader.getProgramIndex(), "skyColor");
 	fog = glGetUniformLocation(shader.getProgramIndex(), "fogActive");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
@@ -408,6 +406,7 @@ void detectCollisions() {
 			car->current_position[0] = 0.0f;
 			car->current_position[1] = 0.0f;
 			car->current_position[2] = 0.0f;
+			car->current_rotation[1] = 0.0f;
 			car->setCurrent_Speed(0);
 			orange[i]->current_position[0] = -100.0f + (rand() % 200);
 			orange[i]->current_position[2] = -100.0f;
@@ -417,7 +416,6 @@ void detectCollisions() {
 }
 
 void update(int delta_t) {
-	//float skyColor[4] = { RED, GREEN, BLUE, 1.0 };
 	if (!paused) {
 		activeKeys();
 
@@ -431,14 +429,13 @@ void update(int delta_t) {
 				orange[i]->current_position[0] = -100.0f + (rand() % 200);
 				orange[i]->current_position[2] = -100.0f;
 			}
-			//orange[i]->setAceleration(globalOrangesAccelaration);
 			orange[i]->move(delta_t);
 		}
 
+		lapFirework->move(delta_t);
+
 		detectCollisions();
 	}
-
-	//globalOrangesAccelaration += 0.0002f;
 }
 
 void timeCount(int value)
@@ -480,6 +477,7 @@ void renderHUD() {
 void renderScene(void) {
 
 	FrameCount++;
+	glClearColor(RED, GREEN, BLUE, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	// load identity matrices
 	loadIdentity(VIEW);
@@ -490,7 +488,6 @@ void renderScene(void) {
 	glUseProgram(shader.getProgramIndex());
 	glUniform1i(texMode_uniformId, 0);
 	glUniform1i(tex_loc0, 0);
-	float skyColor[4] = { 0.5, 0.5, 0.5, 1.0 };
 	glUniform1i(tex_loc1, 1);
 	glUniform1i(fog, fogActive);
 	glUniform4fv(skyColorId, 1, skyColor);
@@ -519,8 +516,16 @@ void renderScene(void) {
 		orange[i]->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	}
 
+	//glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	lapFirework->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	glDisable(GL_BLEND);
+	//glEnable(GL_DEPTH_TEST);
+
 	renderHUD();
-	glClearColor(RED, GREEN, BLUE, 1.0);
+
 	glutSwapBuffers();
 }
 
@@ -545,6 +550,7 @@ void init()
 	}
 
 	hudMessage->createMesh();
+	lapFirework->createMesh();
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
@@ -617,6 +623,9 @@ int main(int argc, char **argv) {
 
 	if (hudMessage == NULL)
 		hudMessage = new HudMessage(0.0f, -3.0f, 0.0f);
+
+	if (lapFirework == NULL)
+		lapFirework = new Firework(1000);
 
 	entities.push_back(car);
 	entities.push_back(terrain);

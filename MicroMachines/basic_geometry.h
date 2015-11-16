@@ -30,7 +30,7 @@ struct MyMesh {
 
 void createCar(MyMesh *mesh, int objId);
 void createCube(MyMesh *mesh, int objId);
-void createPlan(MyMesh *mesh, int objId);
+void createQuad(float size_x, float size_y, MyMesh *mesh, int objId);
 void createSphere(float radius, int divisions, MyMesh *mesh, int objId);
 void createTorus(float innerRadius, float outerRadius, int rings, int sides, MyMesh *mesh, int objId);
 void createCylinder(float height, float radius, int sides, MyMesh *mesh, int objId);

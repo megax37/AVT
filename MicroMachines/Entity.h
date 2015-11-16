@@ -22,6 +22,8 @@
 #include "Box.h"
 
 #define PI 3.14159265
+#define frand()	((float)rand()/RAND_MAX)
+
 // The storage for matrices
 extern float mMatrix[COUNT_MATRICES][16];
 extern float mCompMatrix[COUNT_COMPUTED_MATRICES][16];

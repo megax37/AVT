@@ -226,7 +226,6 @@ void Car::increaseRotation(float dx, float dy, float dz) {
 }
 
 void Car::move(int delta_t){
-	increaseRotation(0, currentTurn_speed *(delta_t / 1000.0f), 0);
 	current_speed += current_Aceleration * (delta_t / 1000.0f);
 	if (current_speed > max_velocity) {
 		current_speed = max_velocity;
@@ -234,6 +233,7 @@ void Car::move(int delta_t){
 	else if (current_speed < -max_velocity) {
 		current_speed = -max_velocity;
 	}
+	increaseRotation(0, (currentTurn_speed - ((currentTurn_speed / 140) * current_speed * 2)) * (delta_t / 1000.0f), 0);
 	float distance = current_speed * (delta_t / 1000.0f);
 	float dx = (float)(distance * sin(Car::current_rotation[1] * (PI / 180.f)));
 	float dz = (float)(distance * cos(Car::current_rotation[1] * (PI / 180.f)));

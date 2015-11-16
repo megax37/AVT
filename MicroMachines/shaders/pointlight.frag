@@ -48,8 +48,8 @@ void main() {
 	float attenuation;
 
 	// Initialize total lighting with ambient lighting;
-	vec4 totalDiffuse = vec4(0.0);
-	vec4 totalSpecular = vec4(0.0);
+	vec3 totalDiffuse = vec3(0.0);
+	vec3 totalSpecular = vec3(0.0);
 
 	// For all light sources
 	for(int i = 0; i < numberOfLights; i++) {
@@ -86,13 +86,13 @@ void main() {
 			}
 
 			float intensity = max(dot(n,l), 0.0);
-			vec4 diff = lights[i].diffuse * intensity;
-			vec4 spec = vec4(0.0);
+			vec3 diff = lights[i].diffuse.rgb * intensity;
+			vec3 spec = vec3(0.0);
 		
 			if (intensity > 0.0) {
 				vec3 h = normalize(l + e);
 				float intSpec = max(dot(h,n), 0.0);
-				spec = lights[i].specular * pow(intSpec, mat.shininess);
+				spec = lights[i].specular.rgb * pow(intSpec, mat.shininess);
 			}
 
 			totalDiffuse = totalDiffuse + attenuation * diff;
@@ -111,22 +111,27 @@ void main() {
 
 	if(texMode == 0) // No textures
 	{
-		colorOut = max(totalDiffuse * mat.diffuse + totalSpecular * mat.specular, mat.ambient);
+		colorOut = max(vec4(totalDiffuse, 1.0) * mat.diffuse + vec4(totalSpecular, 1.0) * mat.specular, mat.ambient);
 	}
 	else if (texMode == 1) // Modulate diffuse color with texel color
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
-		colorOut = max(totalDiffuse * mat.diffuse * texel + totalSpecular * mat.specular, mat.ambient * texel);
+		colorOut = max(vec4(totalDiffuse, 1.0) * mat.diffuse * texel + vec4(totalSpecular, 1.0) * mat.specular, mat.ambient * texel);
 	}
 	else if (texMode == 2) // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
-		colorOut = max(totalDiffuse * texel + totalSpecular * mat.specular, 0.1*texel);
+		colorOut = max(vec4(totalDiffuse, 1.0) * texel + vec4(totalSpecular, 1.0) * mat.specular, 0.1*texel);
+	}
+	else if (texMode == 3) // Modulate diffuse color with texel color, no light contribution (for particles)
+	{
+		texel = texture(texmap0, DataIn.tex_coord);
+		colorOut = mat.diffuse * texel;
 	}
 	else {
 		texel = texture(texmap0, DataIn.tex_coord);
 		texel1 = texture(texmap1, DataIn.tex_coord);
-		colorOut = max(totalDiffuse * texel * texel1 + totalSpecular * mat.specular, 0.1 * texel * texel1);
+		colorOut = max(vec4(totalDiffuse, 1.0) * texel * texel1 + vec4(totalSpecular, 1.0) * mat.specular, 0.1 * texel * texel1);
 	}
 	if(fogActive) {
 			colorOut = mix(skyColor, colorOut, visibility);
