@@ -15,11 +15,14 @@ typedef struct {
 class ParticleSystem : public Entity {
 
 protected:
+	float startX = 0;
+	float startY = 0;
+	float startZ = 0;
 	int max_particles = 500;
 	Particle *particles;
 	GLuint TextureArray[1];
-public:
 
+public:
 	ParticleSystem();
 	ParticleSystem(int numberOfParticles);
 

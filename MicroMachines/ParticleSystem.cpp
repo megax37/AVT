@@ -17,7 +17,7 @@ ParticleSystem::ParticleSystem(int numberOfParticles) : Entity(1) {
 
 void ParticleSystem::createMesh() {
 
-	float shininess = 100.0f;
+	float shininess = 50.0f;
 	int texcount = 1;
 
 	objId = 0;

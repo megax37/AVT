@@ -52,7 +52,9 @@ PointLight *pointLight6;
 SpotLight *spotLight7;
 SpotLight *spotLight8;
 HudMessage *hudMessage;
-Firework *lapFirework;
+Firework *lapFireworkRed;
+Firework *lapFireworkWhite;
+Firework *lapFireworkBlue;
 
 int numberOfLives = MAX_LIVES;
 
@@ -137,7 +139,9 @@ void processKeys(unsigned char key, int xx, int yy)
 		glDisable(GL_MULTISAMPLE);
 		break;
 	case 'e':
-		lapFirework->initParticles();
+		lapFireworkRed->initParticles();
+		lapFireworkWhite->initParticles();
+		lapFireworkBlue->initParticles();
 		break;
 	case 'f':
 		if (fogActive) {
@@ -150,9 +154,9 @@ void processKeys(unsigned char key, int xx, int yy)
 			lastRED = RED;
 			lastBLUE = BLUE;
 			lastGREEN = GREEN;
-			RED = 0.45f;
-			GREEN = 0.45f;
-			BLUE = 0.45f;
+			RED = 0.49f;
+			GREEN = 0.49f;
+			BLUE = 0.49f;
 			fogActive = true;
 		}
 		break;
@@ -413,6 +417,13 @@ void detectCollisions() {
 			return;
 		}
 	}
+
+	if (car->current_position[0] > -7.5f && car->current_position[0] < 7.5f &&
+		car->current_position[2] >  9.0f && car->current_position[2] < 11.0f) {
+		lapFireworkRed->initParticles();
+		lapFireworkWhite->initParticles();
+		lapFireworkBlue->initParticles();
+	}
 }
 
 void update(int delta_t) {
@@ -432,7 +443,9 @@ void update(int delta_t) {
 			orange[i]->move(delta_t);
 		}
 
-		lapFirework->move(delta_t);
+		lapFireworkRed->move(delta_t);
+		lapFireworkWhite->move(delta_t);
+		lapFireworkBlue->move(delta_t);
 
 		detectCollisions();
 	}
@@ -518,9 +531,11 @@ void renderScene(void) {
 
 	//glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	lapFirework->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	lapFireworkRed->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	lapFireworkWhite->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	lapFireworkBlue->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	glDisable(GL_BLEND);
 	//glEnable(GL_DEPTH_TEST);
 
@@ -550,7 +565,9 @@ void init()
 	}
 
 	hudMessage->createMesh();
-	lapFirework->createMesh();
+	lapFireworkRed->createMesh();
+	lapFireworkWhite->createMesh();
+	lapFireworkBlue->createMesh();
 
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
@@ -624,8 +641,14 @@ int main(int argc, char **argv) {
 	if (hudMessage == NULL)
 		hudMessage = new HudMessage(0.0f, -3.0f, 0.0f);
 
-	if (lapFirework == NULL)
-		lapFirework = new Firework(1000);
+	if (lapFireworkRed == NULL) {
+		lapFireworkRed = new Firework(2.5f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkRed->setRGB(1.0f, 0.0f, 0.0f);
+		lapFireworkWhite = new Firework(0.0f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkWhite->setRGB(1.0f, 1.0f, 1.0f);
+		lapFireworkBlue = new Firework(-2.5f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkBlue->setRGB(0.0f, 0.0f, 1.0f);
+	}
 
 	entities.push_back(car);
 	entities.push_back(terrain);
