@@ -76,29 +76,19 @@ void Car::createMesh() {
 	mesh[objId].rotation[3] = 1.0f;
 	createTorus(0.20f, 0.80f, 20, 20, mesh, objId);
 
-	/*float amb1[] = { 0.05f, 0.05f, 0.1f, 1.0f };
-	float diff1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	float spec1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	float emissive1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	float shininess1 = 100.0f;
-	int texcount1 = 0;*/
+	float amb2[] = { 0.1f, 0.1f, 0.1f, 0.5f };
+	float diff2[] = { 1.0f, 1.0f, 1.0f, 0.5f };
+	float spec2[] = { 1.0f, 1.0f, 1.0f, 0.5f };
 
 	// create geometry and VAO of the windshield
 	objId = 2;
-	memcpy(mesh[objId].mat.ambient, amb1, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.diffuse, diff1, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.specular, spec1, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.ambient, amb2, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.diffuse, diff2, 4 * sizeof(float));
+	memcpy(mesh[objId].mat.specular, spec2, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.emissive, emissive1, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess1;
 	mesh[objId].mat.texCount = texcount1;
-	mesh[objId].position[0] = 0.0f;
-	mesh[objId].position[1] = 0.0f;
-	mesh[objId].position[2] = 0.0f;
 	mesh[objId].vaoElements = 1;
-	mesh[objId].rotation[0] = 90.0f;
-	mesh[objId].rotation[1] = 0.0f;
-	mesh[objId].rotation[2] = 0.0f;
-	mesh[objId].rotation[3] = 1.0f;
 	createCube(mesh, objId);
 }
 
@@ -159,7 +149,9 @@ void Car::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId,
 				}
 			}
 		}
+		glUniform1i(texMode_uniformId, 0);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Car::drawWindshield(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {

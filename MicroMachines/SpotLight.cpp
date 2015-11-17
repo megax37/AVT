@@ -19,7 +19,7 @@ SpotLight::SpotLight(float x, float y, float z, float w, int lightID) : LightSou
 }
 
 void SpotLight::createMesh() {
-	float l_diff[] = { 0.9f, 0.9f, 0.7f, 1.0f };
+	float l_diff[] = { 0.8f, 0.8f, 0.7f, 1.0f };
 	float l_spec[] = { 0.7f, 0.7f, 0.4f, 1.0f };
 
 	memcpy(light->diffuse, l_diff, 4 * sizeof(float));

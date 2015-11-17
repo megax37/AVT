@@ -133,7 +133,11 @@ void main() {
 		texel1 = texture(texmap1, DataIn.tex_coord);
 		colorOut = max(vec4(totalDiffuse, 1.0) * texel * texel1 + vec4(totalSpecular, 1.0) * mat.specular, 0.1 * texel * texel1);
 	}
+
+	if(colorOut.a < 0.1) {
+		discard;
+	}
 	if(fogActive) {
-			colorOut = mix(skyColor, colorOut, visibility);
+		colorOut = mix(skyColor, colorOut, visibility);
 	}
 }

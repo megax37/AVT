@@ -21,6 +21,7 @@
 #include "Terrain.h"
 #include "Orange.h"
 #include "Butter.h"
+#include "Glass.h"
 #include "Road.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -40,6 +41,7 @@ Car *car;
 Car *lives[MAX_LIVES];
 Terrain *terrain;
 Butter *butter;
+Glass *glass;
 Orange *orange[5];
 Road *road;
 DirectionalLight *dirLight0;
@@ -392,6 +394,10 @@ void detectCollisions() {
 		memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
 	}
 
+	if (Box::intersectCircularBox(car->getBox(), glass->getBox())) {
+		memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
+	}
+
 	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
 		if (car->current_position[1] > -55.0f)
 			car->increasePosition(0, -1.0f, 0);
@@ -531,7 +537,8 @@ void renderScene(void) {
 
 	//glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glass->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	lapFireworkRed->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	lapFireworkWhite->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
@@ -546,7 +553,6 @@ void renderScene(void) {
 
 void init()
 {
-
 	for each(LightSource* light in lights) {
 		light->createMesh();
 	}
@@ -565,6 +571,7 @@ void init()
 	}
 
 	hudMessage->createMesh();
+	glass->createMesh();
 	lapFireworkRed->createMesh();
 	lapFireworkWhite->createMesh();
 	lapFireworkBlue->createMesh();
@@ -607,6 +614,10 @@ int main(int argc, char **argv) {
 
 	if (butter == NULL){
 		butter = new Butter(-80.0f + (rand() % 160), 1.0f, -80.0f + (rand() % 160));
+	}
+
+	if (glass == NULL) {
+		glass = new Glass(15.0f, 5.0f, 0.0f);
 	}
 
 	if (dirLight0 == NULL) {

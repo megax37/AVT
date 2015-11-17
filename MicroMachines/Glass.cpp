@@ -1,47 +1,41 @@
-#include "Butter.h"
+#include "Glass.h"
 
-Butter::Butter() : Entity(1) {
-	glGenTextures(1, TextureArray);
-	TGA_Texture(TextureArray, "butter.tga", 0);
-	box = new Box(position[0], position[2], 3);
+Glass::Glass() : Entity(1) {
+	//glGenTextures(1, TextureArray);
+	//TGA_Texture(TextureArray, "butter.tga", 0);
+	box = new Box(current_position[0], current_position[2], 2.8f);
 }
 
-Butter::Butter(float x, float y, float z) : Entity(1) {
+Glass::Glass(float x, float y, float z) : Entity(1) {
 	current_position[0] = x;
 	current_position[1] = y;
 	current_position[2] = z;
-	glGenTextures(1, TextureArray);
-	TGA_Texture(TextureArray, "butter.tga", 0);
-	box = new Box(x, z, 3);
+	//glGenTextures(1, TextureArray);
+	//TGA_Texture(TextureArray, "butter.tga", 0);
+	box = new Box(x, z, 2.8f);
 }
 
-void Butter::createMesh() {
+void Glass::createMesh() {
 
-	float amb[] = { 0.3f, 0.3f, 0.1f, 1.0f };
-	float diff[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	float spec[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	float emissive[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float amb[] = { 0.1f, 0.2f, 0.25f, 0.2f };
+	float diff[] = { 0.5f, 0.7f, 0.7f, 0.3f };
+	float spec[] = { 0.4f, 0.7f, 0.7f, 0.25f };
 	float shininess = 100.0f;
-	int texcount = 1;
+	int texcount = 0;
 
-	// create geometry and VAO of the pawn
+	// create geometry and VAO of the glass
 	objId = 0;
 	memcpy(mesh[objId].mat.ambient, amb, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.diffuse, diff, 4 * sizeof(float));
 	memcpy(mesh[objId].mat.specular, spec, 4 * sizeof(float));
-	memcpy(mesh[objId].mat.emissive, emissive, 4 * sizeof(float));
 	mesh[objId].mat.shininess = shininess;
 	mesh[objId].mat.texCount = texcount;
-	mesh[objId].texUnits[0] = TextureArray[0];
-	mesh[objId].position[0] = current_position[0];
-	mesh[objId].position[1] = current_position[1];
-	mesh[objId].position[2] = current_position[2];
+	//mesh[objId].texUnits[0] = TextureArray[0];
 	mesh[objId].vaoElements = 1;
-	createCube(mesh, objId);
-
+	createCylinder(10.0f, 2.8f, 20, mesh, objId);
 }
 
-void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
+void Glass::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId) {
 
 	GLuint loc;
 
@@ -62,11 +56,10 @@ void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 			glUniform4fv(loc, 1, mesh[i].mat.specular);
 			loc = glGetUniformLocation(shader.getProgramIndex(), "mat.shininess");
 			glUniform1f(loc, mesh[i].mat.shininess);
+
 			pushMatrix(MODEL);
 			translate(MODEL, current_position[0], current_position[1], current_position[2]);
-			if (i == 0) {
-				scale(MODEL, 4.0f, 2.0f, 6.0f);
-			}
+
 			// send matrices to OGL
 			computeDerivedMatrix(PROJ_VIEW_MODEL);
 			glUniformMatrix4fv(vm_uniformId, 1, GL_FALSE, mCompMatrix[VIEW_MODEL]);
@@ -86,12 +79,8 @@ void Butter::render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniform
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Butter::increaseRotation(float dx, float dy, float dz) {
-	current_rotation[0] += dx;
-	current_rotation[1] += dy;
-	current_rotation[2] += dz;
-}
+void Glass::increaseRotation(float dx, float dy, float dz) {}
 
-void Butter::increasePosition(float dx, float dy, float dz) {}
+void Glass::increasePosition(float dx, float dy, float dz) {}
 
-void Butter::move(int delta_t){}
+void Glass::move(int delta_t){}

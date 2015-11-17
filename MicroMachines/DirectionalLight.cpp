@@ -9,7 +9,7 @@ DirectionalLight::DirectionalLight(float x, float y, float z, float w, int light
 
 void DirectionalLight::createMesh() {
 	float l_diff[] = { 0.8f, 0.8f, 0.7f, 1.0f }; //luz amarela 
-	float l_spec[] = { 0.8f, 0.8f, 0.7f, 1.0f };
+	float l_spec[] = { 0.9f, 0.9f, 0.9f, 1.0f };
 	memcpy(light->diffuse, l_diff, 4 * sizeof(float));
 	memcpy(light->specular, l_spec, 4 * sizeof(float));
 }
