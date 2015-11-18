@@ -49,7 +49,7 @@ public:
 		r = newR;
 	}
 
-	float getFreeView() { return freeView; }
+	bool getFreeView() { return freeView; }
 
 	void setFreeView(bool newFreeView) {
 		freeView = newFreeView;

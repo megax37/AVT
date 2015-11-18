@@ -79,6 +79,7 @@ GLint tex_loc0, tex_loc1;
 GLint texMode_uniformId;
 GLint skyColorId;
 GLint fog;
+GLint numberLights_uniformId;
 
 float RED = 0.0f;
 float lastRED = 0.0f;
@@ -420,6 +421,7 @@ GLuint setupShaders() {
 	fog = glGetUniformLocation(shader.getProgramIndex(), "fogActive");
 	tex_loc0 = glGetUniformLocation(shader.getProgramIndex(), "texmap0");
 	tex_loc1 = glGetUniformLocation(shader.getProgramIndex(), "texmap1");
+	numberLights_uniformId = glGetUniformLocation(shader.getProgramIndex(), "numberOfLights");
 
 	printf("InfoLog for Hello World Shader\n%s\n\n", shader.getAllInfoLogs().c_str());
 
@@ -446,6 +448,12 @@ void detectCollisions() {
 	if (Box::interserctTerrainBox(car->getBox(), terrain->getBox())) {
 		if (car->current_position[1] > -55.0f)
 			car->increasePosition(0, -1.0f, 0);
+	}
+	
+	for (int i = 0; i < 8; i++) {
+		if (Box::intersectCircularBox(car->getBox(), tree[i]->getBox())) {
+			memcpy(car->current_position, car->previousPosition, 3 * sizeof(float));
+		}
 	}
 
 	for (size_t i = 0; i < 5; i++)
@@ -543,15 +551,13 @@ void renderFlare() {
 	loadIdentity(PROJECTION);
 	pushMatrix(VIEW);
 	loadIdentity(VIEW); //viewer looking down at negative z direction
-	ortho(0, SCREENwidth, SCREENheight, 0, -1, 1);
+	ortho(0.0f, (float) SCREENwidth, (float) SCREENheight, 0.0f, -1.0f, 1.0f);
 	flare->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	popMatrix(VIEW);
 	popMatrix(PROJECTION);
 }
 
 void renderScene(void) {
-
-	float modelview[16];  //To be used in "Cheating" Matrix reset Billboard technique
 
 	FrameCount++;
 	glClearColor(RED, GREEN, BLUE, 1.0);
@@ -598,7 +604,7 @@ void renderScene(void) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//Renders the Tree Billboard
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 8; i++){
 		float cam[3] = { camera->getCamX(), camera->getCamY(), camera->getCamZ()};
 		tree[i]->render2(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId, cam[0], cam[1], cam[2],billboardType);
 	}
@@ -649,7 +655,7 @@ void init()
 
 	//Initialize Trees
 	
-	for (int k = 0; k < 5; k++){
+	for (int k = 0; k < 8; k++){
 		tree[k]->createMesh();
 	}
 
@@ -696,7 +702,7 @@ int main(int argc, char **argv) {
 	}
 
 	//Tree Creation
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 8; i++){
 		if (tree[i] == NULL){
 			//Spawns a tree between -100 and 100
 			tree[i] = new Tree(-100.0f + (rand() % 200), 3.0f, -100.0f + (rand() % 200));

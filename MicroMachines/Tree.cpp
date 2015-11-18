@@ -3,6 +3,7 @@
 Tree::Tree() : Entity(1) {
 	glGenTextures(1, TextureArray);
 	TGA_Texture(TextureArray, "tree.tga", 0);
+	box = new Box(current_position[0], current_position[2], 1);
 }
 
 Tree::Tree(float x, float y, float z) : Entity(1) {
@@ -11,6 +12,7 @@ Tree::Tree(float x, float y, float z) : Entity(1) {
 	current_position[0] = x;
 	current_position[1] = y;
 	current_position[2] = z;
+	box = new Box(current_position[0], current_position[2], 1);
 }
 
 void Tree::createMesh() {

@@ -70,11 +70,14 @@ public:
 		float fMaxSize,
 		unsigned int minColour,
 		unsigned int maxColour);
+
 	int heightFromWidth(int width) {
 		return ((320 * width * screenHeight) / (240 * screenHeight));
 	}
+
 	int getXFlare() { return xFlare; }
 	int getYFlare() { return yFlare; }
+
 	void setXFlare(int newXFlare) {
 		xFlare = newXFlare;
 	}
@@ -83,16 +86,11 @@ public:
 	}
 	int getScreenWidth() { return screenWidth; }
 	int getScreenHeight() { return screenHeight; }
-	void newFlare(int bFromFile);
+
 	void createMesh();
 	void move(int delta_t) {};
 	void increasePosition(float dx, float dy, float dz){};
 	void increaseRotation(float dx, float dy, float dz){};
 	void render(VSShaderLib &shader, GLint &pvm_uniformId, GLint &vm_uniformId, GLint &normal_uniformId, GLint &texMode_uniformId);
-	/*void TM_loadTextures();
-	void TM_purgeTextures();
-	void TM_setTexture(unsigned int *textureArray, TEXTURE_DEF *tex, int ID);
-	TEXTURE_DEF *TM_getNthTexture(int n);
-	TEXTURE_DEF *TM_getNamedTexture(char *name);*/
 };
 #endif

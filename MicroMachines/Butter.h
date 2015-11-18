@@ -5,7 +5,6 @@
 
 class Butter : public Entity {
 private:
-	float position[3];
 	GLuint TextureArray[1];
 public:
 
