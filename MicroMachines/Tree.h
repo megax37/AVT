@@ -2,6 +2,7 @@
 #define __Tree__
 
 #include "Entity.h"
+#include "Billboard.h"
 
 class Tree : public Entity {
 private:

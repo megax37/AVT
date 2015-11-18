@@ -121,12 +121,22 @@ void main() {
 	else if (texMode == 2) // Diffuse color is replaced by texel color, with specular area or ambient (0.1*texel)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
-		colorOut = max(vec4(totalDiffuse, 1.0) * texel + vec4(totalSpecular, 1.0) * mat.specular, 0.1*texel);
+		if(texel.a < 0.1) {
+			discard;
+		}
+		else {
+			colorOut = max(vec4(totalDiffuse, 1.0) * texel + vec4(totalSpecular, 1.0) * mat.specular, 0.1*texel);
+		}
 	}
 	else if (texMode == 3) // Modulate diffuse color with texel color, no light contribution (for particles)
 	{
 		texel = texture(texmap0, DataIn.tex_coord);
-		colorOut = mat.diffuse * texel;
+		if(texel.a < 0.1) {
+			discard;
+		}
+		else {
+			colorOut = mat.diffuse * texel;
+		}
 	}
 	else {
 		texel = texture(texmap0, DataIn.tex_coord);
@@ -134,9 +144,6 @@ void main() {
 		colorOut = max(vec4(totalDiffuse, 1.0) * texel * texel1 + vec4(totalSpecular, 1.0) * mat.specular, 0.1 * texel * texel1);
 	}
 
-	if(colorOut.a < 0.1) {
-		discard;
-	}
 	if(fogActive) {
 		colorOut = mix(skyColor, colorOut, visibility);
 	}

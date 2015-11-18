@@ -196,7 +196,7 @@ void processKeys(unsigned char key, int xx, int yy)
 			BLUE = 0.0f;
 		}
 		else {
-			RED = 0.95f;
+			RED = 0.8f;
 			GREEN = 0.95f;
 			BLUE = 0.95f;
 		}
@@ -602,12 +602,14 @@ void renderScene(void) {
 		float cam[3] = { camera->getCamX(), camera->getCamY(), camera->getCamZ()};
 		tree[i]->render2(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId, cam[0], cam[1], cam[2],billboardType);
 	}
-	
+
+	glDepthMask(GL_FALSE);
 	glass->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	lapFireworkRed->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	lapFireworkWhite->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	lapFireworkBlue->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	//glEnable(GL_DEPTH_TEST);
 
@@ -742,11 +744,11 @@ int main(int argc, char **argv) {
 		hudMessage = new HudMessage(0.0f, -3.0f, 0.0f);
 
 	if (lapFireworkRed == NULL) {
-		lapFireworkRed = new Firework(2.5f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkRed = new Firework(2.5f - 15, 5.0f, -30.0f, 150);
 		lapFireworkRed->setRGB(1.0f, 0.0f, 0.0f);
-		lapFireworkWhite = new Firework(0.0f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkWhite = new Firework(0.0f - 15, 5.0f, -30.0f, 150);
 		lapFireworkWhite->setRGB(1.0f, 1.0f, 1.0f);
-		lapFireworkBlue = new Firework(-2.5f - 15, 5.0f, -30.0f, 1000);
+		lapFireworkBlue = new Firework(-2.5f - 15, 5.0f, -30.0f, 150);
 		lapFireworkBlue->setRGB(0.0f, 0.0f, 1.0f);
 	}
 
