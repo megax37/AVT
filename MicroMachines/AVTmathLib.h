@@ -191,4 +191,7 @@
 		
 		/// Computes Derived Matrices (4x4)
 		void computeDerivedMatrix(ComputedMatrixTypes aType);
+
+		///It calculates only the PVM matrix. Just an auxiliary function to be used in billboad demo: it implies that VIEW_MODEL was already calculated
+		void computeDerivedMatrix_PVM();
 #endif

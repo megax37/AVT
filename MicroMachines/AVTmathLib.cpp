@@ -385,6 +385,13 @@ void computeDerivedMatrix(ComputedMatrixTypes aType) {
 	}
 }
 
+// It calculates only the PVM matrix. Just an auxiliary function to be used in billboad demo: it implies that VIEW_MODEL was already calculated
+void computeDerivedMatrix_PVM(){
+
+	memcpy(mCompMatrix[PROJ_VIEW_MODEL], mMatrix[PROJECTION], 16 * sizeof(float));
+	multMatrix(mCompMatrix[PROJ_VIEW_MODEL], mCompMatrix[VIEW_MODEL]);
+}
+
 // computes the derived normal matrix - should be used after computeDerivedMatrix
 void computeNormalMatrix3x3() {
 

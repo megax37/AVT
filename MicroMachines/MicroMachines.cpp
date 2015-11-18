@@ -28,6 +28,8 @@
 #include "SpotLight.h"
 #include "HudMessage.h"
 #include "Firework.h"
+#include "Tree.h"
+#include "Billboard.h"
 
 #define MAX_LIVES 5
 #define CAPTION "MicroMachines AVT"
@@ -44,6 +46,7 @@ Butter *butter;
 Glass *glass;
 Orange *orange[5];
 Road *road;
+Tree *tree[8];
 DirectionalLight *dirLight0;
 PointLight *pointLight1;
 PointLight *pointLight2;
@@ -87,6 +90,9 @@ bool keystates[256];
 
 // Frame counting and FPS computation
 long t_actual, t_ant, timebase = 0, frame = 0;
+
+//Billboarding Type
+int billboardType = 0;
 
 void timer(int value)
 {
@@ -203,6 +209,17 @@ void processKeys(unsigned char key, int xx, int yy)
 		newFlag = !spotLight7->getActive();
 		spotLight7->setActive(newFlag);
 		spotLight8->setActive(newFlag);
+		break;
+
+	case 'b':
+		billboardType++; if (billboardType == 5) billboardType = 0;
+		switch (billboardType) {
+		case 0: printf("Cheating Spherical (matrix reset)\n"); break;
+		case 1: printf("Cheating Cylindrical (matrix reset)\n"); break;
+		case 2: printf("True Spherical\n"); break;
+		case 3: printf("True Cylindrical\n"); break;
+		case 4: printf("No billboarding\n"); break;
+		}
 		break;
 	}
 
@@ -495,6 +512,8 @@ void renderHUD() {
 
 void renderScene(void) {
 
+	float modelview[16];  //To be used in "Cheating" Matrix reset Billboard technique
+
 	FrameCount++;
 	glClearColor(RED, GREEN, BLUE, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -538,6 +557,13 @@ void renderScene(void) {
 	//glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//Renders the Tree Billboard
+	for (int i = 0; i < 5; i++){
+		float cam[3] = { camera->getCamX(), camera->getCamY(), camera->getCamZ()};
+		tree[i]->render2(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId, cam[0], cam[1], cam[2],billboardType);
+	}
+	
 	glass->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	lapFireworkRed->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
@@ -576,6 +602,12 @@ void init()
 	lapFireworkWhite->createMesh();
 	lapFireworkBlue->createMesh();
 
+	//Initialize Trees
+	
+	for (int k = 0; k < 5; k++){
+		tree[k]->createMesh();
+	}
+
 	// some GL settings
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
@@ -609,6 +641,14 @@ int main(int argc, char **argv) {
 		if (orange[i] == NULL){
 			//Spawns an orange between -100 and 100
 			orange[i] = new Orange(-100.0f + (rand() % 200), 3.0f, -100.0f + (rand() % 200));
+		}
+	}
+
+	//Tree Creation
+	for (int i = 0; i < 5; i++){
+		if (tree[i] == NULL){
+			//Spawns a tree between -100 and 100
+			tree[i] = new Tree(-100.0f + (rand() % 200), 3.0f, -100.0f + (rand() % 200));
 		}
 	}
 
