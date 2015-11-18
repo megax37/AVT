@@ -75,6 +75,70 @@ void createCar(MyMesh *mesh, int objId) {
 	mesh[objId].type = GL_TRIANGLES;
 }
 
+void createFlareQuad(int x, int y, int width, int height, MyMesh *mesh, int objId)
+{
+	float flare_Vertices[] = {
+		x, y, 1.0f, 1.0f,
+		x + width, y, 1.0f, 1.0f,
+		x + width, y + height, 1.0f, 1.0f,
+		x, y + height, 1.0f, 1.0f
+	};
+
+	float flare_TextureCoord[] = {
+		0.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f
+	};
+
+
+	float flare_Normals[] = {
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f
+	};
+
+	unsigned int flare_faceIndex[] = {
+		0, 1, 2, 0, 2, 3
+	};
+
+	mesh[objId].numIndexes = 2 * 3;
+
+	glGenVertexArrays(1, &(mesh[objId].vao));
+	glBindVertexArray(mesh[objId].vao);
+
+	glGenBuffers(2, VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(flare_Vertices) + sizeof(flare_Normals) + sizeof(flare_TextureCoord), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(flare_Vertices), flare_Vertices);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(flare_Vertices), sizeof(flare_Normals), flare_Normals);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(flare_Vertices) + sizeof(flare_Normals), sizeof(flare_TextureCoord), flare_TextureCoord);
+
+	glEnableVertexAttribArray(VERTEX_COORD_ATTRIB);
+	glVertexAttribPointer(VERTEX_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, 0);
+	glEnableVertexAttribArray(NORMAL_ATTRIB);
+	glVertexAttribPointer(NORMAL_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)sizeof(flare_Vertices));
+	glEnableVertexAttribArray(TEXTURE_COORD_ATTRIB);
+	glVertexAttribPointer(TEXTURE_COORD_ATTRIB, 4, GL_FLOAT, 0, 0, (void *)(sizeof(flare_Vertices) + sizeof(flare_Normals)));
+
+
+	//index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh[objId].numIndexes, flare_faceIndex, GL_STATIC_DRAW);
+
+	// unbind the VAO
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glDisableVertexAttribArray(VERTEX_COORD_ATTRIB);
+	glDisableVertexAttribArray(NORMAL_ATTRIB);
+	glDisableVertexAttribArray(TEXTURE_COORD_ATTRIB);
+
+	mesh[objId].type = GL_TRIANGLES;
+}
+
 void createCube(MyMesh *mesh, int objId) {
 
 	mesh[objId].numIndexes = faceCount *3;

@@ -30,6 +30,7 @@
 #include "Firework.h"
 #include "Tree.h"
 #include "Billboard.h"
+#include "flare.h"
 
 #define MAX_LIVES 5
 #define CAPTION "MicroMachines AVT"
@@ -60,8 +61,11 @@ HudMessage *hudMessage;
 Firework *lapFireworkRed;
 Firework *lapFireworkWhite;
 Firework *lapFireworkBlue;
+Flare *flare;
 
 int numberOfLives = MAX_LIVES;
+int SCREENwidth;
+int SCREENheight;
 
 bool paused = false;
 
@@ -87,6 +91,7 @@ float skyColor[4] = { 0.5, 0.5, 0.5, 1.0 };
 // Mouse Tracking Variables
 int startX, startY, tracking = 0;
 bool keystates[256];
+int     xMouse = 0, yMouse = 0;
 
 // Frame counting and FPS computation
 long t_actual, t_ant, timebase = 0, frame = 0;
@@ -302,6 +307,12 @@ void processMouseButtons(int button, int state, int xx, int yy)
 			tracking = 1;
 		else if (button == GLUT_RIGHT_BUTTON)
 			tracking = 2;
+
+		xMouse = xx;
+		yMouse = yy;
+
+		flare->setXFlare(xx*SCREENwidth / glutGet(GLUT_WINDOW_WIDTH));
+		flare->setYFlare(yy*SCREENheight / glutGet(GLUT_WINDOW_HEIGHT));
 	}
 
 	//stop tracking the mouse
@@ -340,6 +351,21 @@ void processMouseMotion(int xx, int yy)
 		else if (betaAux < -85.0f)
 			betaAux  = - 85.0f;
 		rAux = camera->getR();
+
+		// Scale mouse coordinates to compensate for window size.
+		flare->setXFlare(flare->getXFlare() + ((xx - xMouse)*SCREENwidth / glutGet(GLUT_WINDOW_WIDTH)));
+		flare->setYFlare(flare->getYFlare() + ((yy - yMouse)*SCREENheight / glutGet(GLUT_WINDOW_HEIGHT)));
+
+		// Clamping -- wouldn't be needed in fullscreen mode.
+		if (flare->getXFlare() >= SCREENwidth)
+			flare->setXFlare(SCREENwidth - 1);
+		if (flare->getXFlare() < 0)
+			flare->setXFlare(0);
+		if (flare->getYFlare() >= SCREENheight)
+			flare->setYFlare(SCREENheight - 1);
+		if (flare->getYFlare() < 0)
+			flare->setYFlare(0);
+
 	}
 	// right mouse button: zoom
 	else if (tracking == 2) {
@@ -351,7 +377,9 @@ void processMouseMotion(int xx, int yy)
 	}
 
 	camera->calculate(rAux, alphaAux, betaAux);
-
+	// Remember last mouse position.
+	xMouse = xx;
+	yMouse = yy;
 	//  uncomment this if not using an idle func
 	//	glutPostRedisplay();
 }
@@ -510,6 +538,17 @@ void renderHUD() {
 	popMatrix(PROJECTION);
 }
 
+void renderFlare() {
+	pushMatrix(PROJECTION);
+	loadIdentity(PROJECTION);
+	pushMatrix(VIEW);
+	loadIdentity(VIEW); //viewer looking down at negative z direction
+	ortho(0, SCREENwidth, SCREENheight, 0, -1, 1);
+	flare->render(shader, pvm_uniformId, vm_uniformId, normal_uniformId, texMode_uniformId);
+	popMatrix(VIEW);
+	popMatrix(PROJECTION);
+}
+
 void renderScene(void) {
 
 	float modelview[16];  //To be used in "Cheating" Matrix reset Billboard technique
@@ -574,6 +613,10 @@ void renderScene(void) {
 
 	renderHUD();
 
+	if (camera->getFreeView()) {
+		renderFlare();
+	}
+
 	glutSwapBuffers();
 }
 
@@ -628,6 +671,12 @@ int main(int argc, char **argv) {
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(WinX, WinY);
 	WindowHandle = glutCreateWindow(CAPTION);
+
+	if (flare == NULL) {
+		SCREENwidth = glutGet(GLUT_WINDOW_WIDTH);
+		SCREENheight = glutGet(GLUT_WINDOW_HEIGHT);
+		flare = new Flare(SCREENwidth, SCREENheight);
+	}
 
 	if (terrain == NULL)
 		terrain = new Terrain();
